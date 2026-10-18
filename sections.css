@@ -1,0 +1,487 @@
+/* ==========================================================================
+   Блоки 4–11 — в языке блоков из Figma (первый экран, «О центре», «С чем приходят»):
+   Involve (заголовки, текст) + Manrope (подписи капсом), молочный фон #F9F5F2,
+   подпись с золотой точкой, заголовки 70 / .9, синий акцент #6E92C2, рамки кадров 9, кнопки 5.
+   Поля 105, сверху и снизу блока по 150 — как у «С чем приходят».
+   Фон чередуется: молочный → камень #EFE9E2 (путь гостя, отзывы, контакты).
+
+   Резина: --u — 1px кадра 1920 (от ширины окна), у мелкого текста — пиксельные минимумы.
+   Появление (классы is-in ставит app.js, когда элемент заметно на экране):
+   .rv — подъём из прозрачности; .sx__line — строка заголовка из окна-маски;
+   .rv-shot — кадр открывается шторкой снизу, фото внутри «оседает» с 1.08; data-in — только класс.
+   ========================================================================== */
+:root{--u:calc(100vw / 1920)}
+.sx{
+  --paper:#F9F5F2; --stone:#EFE9E2; --ink:#070707; --ink72:rgba(7,7,7,.72); --ink60:rgba(7,7,7,.6); --ink40:rgba(7,7,7,.42); --ink20:rgba(7,7,7,.2);
+  --hair:rgba(7,7,7,.09); --acc:#6E92C2; --acc-d:#5F84B6; --gold:#73562C; --dot:#D3B284;
+  --r:calc(9 * var(--u)); --r5:calc(5 * var(--u));
+  --out:cubic-bezier(.16,.84,.24,1); --io:cubic-bezier(.7,0,.2,1);
+  position:relative;z-index:2;background:var(--paper);color:var(--ink);
+  font-family:"Involve","Geist",sans-serif;-webkit-font-smoothing:antialiased}
+.sx--stone{background:var(--stone)}
+.sx__in{padding:calc(150 * var(--u)) calc(105 * var(--u))}
+.sx figure{margin:0}
+
+/* ── типографика ── */
+.sx__label{display:flex;align-items:center;gap:calc(10 * var(--u));margin:0;white-space:nowrap;
+  font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:#73562C}
+.sx__label i{flex:none;width:calc(4 * var(--u));height:calc(4 * var(--u));min-width:3px;min-height:3px;background:#D3B284}
+.sx__h{margin:calc(23 * var(--u)) 0 0;font:500 calc(70 * var(--u))/.9 "Involve",sans-serif;white-space:nowrap}
+.sx__line{display:block;clip-path:inset(-.12em -.06em -.24em -.06em)}
+.sx__line>span{display:block;transform:translateY(112%);transition:transform 1.2s var(--out)}
+.sx__line+.sx__line>span{transition-delay:.08s}
+.is-in>.sx__line>span{transform:none}
+.sx__lead{margin:0;font:400 max(13px,calc(18 * var(--u)))/1.45 "Involve",sans-serif;color:var(--ink72)}
+.sx__lead a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:var(--acc);text-underline-offset:.22em;transition:color .3s ease}
+.sx__lead a:hover{color:var(--acc-d)}
+.sx__p{margin:0;font:400 max(12px,calc(15 * var(--u)))/1.45 "Involve",sans-serif;color:var(--ink60)}
+.sx__head{display:flex;justify-content:space-between;align-items:flex-end;gap:calc(60 * var(--u))}
+.sx__aside{width:calc(520 * var(--u));flex:none}
+
+/* ── появление ── */
+.rv{opacity:0;transform:translateY(calc(26 * var(--u)));transition:opacity .9s ease var(--d,0s),transform 1.1s var(--out) var(--d,0s)}
+.rv.is-in{opacity:1;transform:none}
+.sx__h.rv,.dk__name.rv{opacity:1;transform:none}
+.rv-shot{clip-path:inset(100% 0 0 0);transition:clip-path 1.3s var(--io) var(--d,0s)}
+.rv-shot.is-in{clip-path:inset(0)}
+.rv-shot img,.rv-shot video{transform:scale(1.08);transition:transform 1.8s var(--out) var(--d,0s)}
+.rv-shot.is-in img,.rv-shot.is-in video{transform:none}
+
+/* ── кнопка: синяя плашка и светлый сегмент со стрелкой (как в шапке первого экрана и в «С чем приходят») ── */
+.kbtn{position:relative;display:inline-flex;align-items:stretch;height:calc(52 * var(--u));min-height:40px;border-radius:var(--r5,5px);overflow:hidden;
+  background:#6E92C2;color:#fff;font:500 max(13px,calc(16 * var(--u)))/1 "Involve",sans-serif;white-space:nowrap;transition:background-color .4s ease,color .4s ease}
+/* текст — обычный блок по центру высоты: во flex-контейнере пробелы между словами (после разбивки на буквы) пропали бы */
+.kbtn>span{display:block;align-self:center;padding:0 calc(28 * var(--u))}
+.kbtn>i{display:grid;place-items:center;flex:none;width:calc(52 * var(--u));min-width:40px;background:rgba(255,255,255,.26);transition:background-color .4s ease}
+.kbtn svg{width:calc(18 * var(--u));height:calc(18 * var(--u));min-width:14px;min-height:14px;transition:transform .5s cubic-bezier(.16,.84,.24,1)}
+.kbtn:hover{background:#5F84B6}
+.kbtn:hover>i{background:rgba(255,255,255,.34)}
+.kbtn:hover svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+.kbtn--wide{display:flex;width:100%}
+.kbtn--wide>span{flex:1;text-align:center;padding-left:calc(52 * var(--u))}
+.kbtn--light{background:#fff;color:#070707}
+.kbtn--light>i{background:rgba(7,7,7,.05)}
+.kbtn--light:hover{background:#070707;color:#fff}
+.kbtn--light:hover>i{background:rgba(255,255,255,.14)}
+
+/* ═════════ 5. ГЛАВНЫЙ ВРАЧ — КОМПЕТЕНЦИИ ═════════
+   По Figma (s8aXHdn1…, блок 1920×940): координаты слоёв — от верха блока. Кадр (витрина + доктор) — экспорт макета,
+   расфокус краёв и засветление слева — прежние сайтовые (макетные градиенты-засветления пользователь не взял).
+   Стекло — размытая копия кадра в координатах листа (--gx/--gy), поэтому кадр и копия двигаются одинаково:
+   translate — параллакс по прокрутке (--dy из app.js), scale — «оседание» при появлении. */
+/* масштаб — от ширины, как у всех блоков. С 2026-10-18 блок — сетка, а не координаты: слева колонка текста
+   (подпись, имя, подводка, факты прижаты к низу), справа стекло «Компетенции»; высота — не меньше кадра 940,
+   но растёт по содержимому. На узком окне и при крупном системном масштабе текст упирается в пиксельные минимумы —
+   строки сами раздвигаются, ничего не наезжает (прежде: абсолютные слои фиксированной высоты, _versions/before-fluid-pc).
+   Кадр — cover на весь блок, копия под стеклом — тот же кадр, сдвинутый на положение стекла (--pl/--pt/--dw/--dh ставит app.js). */
+.dk{--uw:calc(100vw / 1920);--u:calc(100vw / 1920);
+  position:relative;display:grid;grid-template-columns:max(calc(496 * var(--u)),360px) minmax(0,1fr) max(calc(597 * var(--u)),400px);
+  align-items:stretch;box-sizing:border-box;min-height:calc(940 * var(--u));padding:calc(145 * var(--u)) max(calc(105 * var(--u)),32px) calc(84 * var(--u));
+  overflow:hidden;isolation:isolate;background:#f3f1ee}
+.dk__scene{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.dk__scene picture{display:contents}
+/* доктор в кадре — x 46 %; на узком окне кадр увеличивается от низа под доктором (--dz, app.js dkGeo): голова ближе к верху блока, а не в пустоте */
+.dk__img,.dk__frost img{position:absolute;display:block;max-width:none;object-fit:cover;object-position:46% 0;transform-origin:46% 100%;
+  translate:0 var(--dy,0px);scale:calc(1.06 * var(--dz,1));transition:scale 2.4s var(--out)}
+.dk__img{left:0;top:0;width:100%;height:100%}
+/* в покое 1.04 — доктор почти в масштабе макета; запаса 2 % по высоте хватает на параллакс ±1,8 % */
+.dk.is-in .dk__img,.dk.is-in .dk__frost img{scale:calc(1.04 * var(--dz,1))}
+/* под текстом слева — свой мягкий спад к цвету бумаги (много точек — без видимого края) */
+.dk__scene::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(249,245,242,.78) 0%,rgba(249,245,242,.7) 12%,rgba(249,245,242,.55) 21%,rgba(249,245,242,.36) 28%,rgba(249,245,242,.18) 34%,rgba(249,245,242,.06) 39%,rgba(249,245,242,0) 44%)}
+
+/* ── слева: подпись, имя, подводка; факты — к низу колонки (вровень с низом стекла) ── */
+.dk__l{grid-column:1;display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding-top:calc(10 * var(--u))}
+.dk__label{color:#7A5F37}
+.dk__name{margin:calc(23 * var(--u)) 0 0;font:500 max(36px,calc(76.81 * var(--u)))/.9 "Involve",sans-serif;white-space:nowrap}
+.dk__name .sx__line+.sx__line>span{transition-delay:.1s}
+.dk__lead{width:max(calc(368 * var(--u)),260px);max-width:100%;margin:calc(16 * var(--u)) 0 0 calc(4 * var(--u));font:400 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.46)}
+.dk__creds{align-self:stretch;margin:auto 0 0;padding:calc(30 * var(--u)) 0 0;list-style:none}
+/* строка факта: число 71 и подпись к его низу в первой колонке 174, текст — во второй; высота — по содержимому, не меньше 94 */
+.dk__creds li,.dk__creds a{display:grid;grid-template-columns:max(calc(174 * var(--u)),92px) minmax(0,1fr);align-items:start}
+.dk__creds li{box-sizing:border-box;min-height:calc(94 * var(--u));padding:calc(14 * var(--u)) 0 calc(12 * var(--u));border-bottom:1px solid rgba(0,0,0,.14)}
+.dk__creds li:has(a){display:block;padding:0}
+.dk__creds a{box-sizing:border-box;min-height:calc(94 * var(--u));padding:calc(14 * var(--u)) 0 calc(12 * var(--u));color:inherit;text-decoration:none}
+.dk__creds b{grid-column:1;grid-row:1;font:500 max(34px,calc(71 * var(--u)))/1 "Involve",sans-serif;color:var(--acc);white-space:nowrap}
+.dk__creds small{grid-column:1;grid-row:1;align-self:start;margin:max(calc(39 * var(--u)),18px) 0 0 max(calc(80 * var(--u)),40px);font:600 max(10px,calc(18 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:rgba(7,7,7,.26)}
+.dk__creds span{grid-column:2;grid-row:1;max-width:max(calc(var(--w,250) * var(--u)),17em);padding-top:calc(15 * var(--u));font:400 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.74);transition:color .3s ease}
+.dk__creds svg{display:inline-block;width:calc(14 * var(--u));height:calc(14 * var(--u));min-width:11px;min-height:11px;margin-left:calc(6 * var(--u));vertical-align:-.1em;transition:transform .5s var(--out)}
+.dk__creds a span{max-width:none}
+.dk__creds a:hover span{color:var(--acc-d)}
+.dk__creds a:hover svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+
+/* ── справа: стекло «Компетенции» 597 — белый 36 % поверх размытой копии кадра, белая обводка, скругление 20 / 7;
+      высота не меньше 711, строки — по содержимому, кнопка внизу ── */
+.dk__panel{grid-column:3;position:relative;display:flex;flex-direction:column;min-height:calc(711 * var(--u));
+  border-radius:calc(20 * var(--u)) calc(20 * var(--u)) calc(7 * var(--u)) calc(7 * var(--u));overflow:hidden;isolation:isolate;
+  clip-path:inset(100% 0 0 0 round calc(20 * var(--u)) calc(20 * var(--u)) calc(7 * var(--u)) calc(7 * var(--u)));transition:clip-path 1.4s var(--io) .35s}
+.dk__panel.is-in{clip-path:inset(0 round calc(20 * var(--u)) calc(20 * var(--u)) calc(7 * var(--u)) calc(7 * var(--u)))}
+.dk__frost{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.dk__frost img{left:calc(var(--pl,0px) * -1);top:calc(var(--pt,0px) * -1);width:var(--dw,100vw);height:var(--dh,100%)}
+.dk__frost::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.36)}
+.dk__panel::after{content:"";position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px #fff}
+.dk__ph{display:flex;justify-content:space-between;align-items:center;gap:12px;box-sizing:border-box;min-height:calc(62 * var(--u));margin:0;padding:calc(12 * var(--u)) calc(30 * var(--u));
+  border-bottom:1px solid #fff;font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase}
+.dk__ph span:first-child{display:flex;align-items:center;gap:calc(10 * var(--u));color:#7A5F37}
+.dk__ph i{width:calc(4 * var(--u));height:calc(4 * var(--u));min-width:3px;min-height:3px;background:var(--dot)}
+.dk__ph span:last-child{color:rgba(7,7,7,.41)}
+.dk__comp{flex:1;margin:0;padding:0;list-style:none}
+.dk__comp li{position:relative;box-sizing:border-box;min-height:calc(115 * var(--u));padding:calc(19 * var(--u)) calc(30 * var(--u)) calc(20 * var(--u)) max(calc(87 * var(--u)),52px);border-bottom:1px solid #fff}
+.dk__comp li:last-child{border-bottom:0}
+.dk__comp em{position:absolute;left:calc(30 * var(--u));top:calc(23 * var(--u));font:600 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";font-style:normal;color:var(--acc);transition:color .35s ease}
+.dk__comp h3{margin:0;font:500 max(15px,calc(20 * var(--u)))/1.39 "Involve",sans-serif;color:var(--ink);transition:transform .6s var(--out)}
+.dk__comp p{max-width:max(calc(329 * var(--u)),17em);margin:calc(6 * var(--u)) 0 0;font:400 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.46);transition:transform .6s var(--out)}
+.dk__comp li:hover h3,.dk__comp li:hover p{transform:translateX(calc(6 * var(--u)))}
+.dk__comp li:hover em{color:var(--ink)}
+/* кнопка во всю ширину стекла: синяя плашка, надпись по центру всей ширины, светлый сегмент со стрелкой справа */
+.dk__btn{position:relative;z-index:2;flex:none;height:max(calc(55 * var(--u)),44px);background:var(--acc);color:#fff;
+  font:500 max(13px,calc(17 * var(--u)))/1.35 "Involve",sans-serif;transition:background-color .4s ease}
+.dk__btn span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.dk__btn i{position:absolute;right:0;top:0;bottom:0;display:grid;place-items:center;width:max(calc(55 * var(--u)),44px);background:rgba(255,255,255,.26);transition:background-color .4s ease}
+.dk__btn svg{width:calc(19 * var(--u));height:calc(19 * var(--u));min-width:14px;min-height:14px;transition:transform .5s var(--out)}
+.dk__btn:hover{background:var(--acc-d)}
+.dk__btn:hover i{background:rgba(255,255,255,.34)}
+.dk__btn:hover svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+/* строки компетенций «читаются» сверху вниз после того, как открылось стекло */
+.dk__comp li,.dk__ph,.dk__btn{opacity:0;transform:translateY(calc(14 * var(--u)))}
+.dk__panel.is-in .dk__ph,.dk__panel.is-in .dk__comp li,.dk__panel.is-in .dk__btn{opacity:1;transform:none;
+  transition:opacity .8s ease calc(.75s + var(--i,0) * .07s),transform 1.1s var(--out) calc(.75s + var(--i,0) * .07s),background-color .4s ease}
+.dk__panel.is-in .dk__btn{--i:6}
+
+/* ═════════ 4. КАК ПРОХОДИТ ПОДБОР — по Figma ═════════
+   белый лист со скруглённым верхом 35 наезжает на «С чем приходят»; в кадре сцены: подпись 161, заголовок 59 / .9,
+   карточки 609×509 с верха 316, между ними 15.3; шкала справа над карточками */
+.jr{margin-top:calc(-35 * var(--u));background:#fff;border-radius:calc(35 * var(--u)) calc(35 * var(--u)) 0 0}
+.jr__run{position:relative;height:300vh}
+/* шапка + дорожка стоят по центру окна (под шапкой сайта — не выше её), а не от верха: в окне выше 16:9 снизу
+   оставалась пустая треть. Карточки в окне выше 16:9 подрастают на половину лишней высоты, в низком — ужимаются по высоте */
+.jr__pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;
+  --jt:max(calc(124 * var(--u)),calc(60px + 40 * var(--u))); --jb:calc(40 * var(--u));
+  padding:var(--jt) 0 var(--jb);
+  --jh:min(calc(509 * var(--u) + max(0px,(100svh - 1080 * var(--u)) / 2)),calc(100svh - var(--jt) - var(--jb) - 155 * var(--u) - 12px))}
+.jr__head{display:flex;justify-content:space-between;align-items:flex-end;padding:0 calc(105 * var(--u))}
+.jr .sx__h{font-size:calc(59 * var(--u))}
+/* шкала: 51 деление, каждое десятое — длинное, под ними номера шагов */
+.jr__scale{width:calc(453 * var(--u));padding-bottom:calc(7 * var(--u))}
+.jr__ticks{display:flex;justify-content:space-between;align-items:flex-end;height:calc(14 * var(--u))}
+.jr__ticks i{flex:none;width:1px;height:45%;background:var(--ink20);transition:background-color .25s ease}
+.jr__ticks i:nth-child(10n+1){height:100%}
+.jr__ticks i.is-on{background:var(--ink)}
+.jr__nums{display:flex;justify-content:space-between;margin-top:calc(10 * var(--u));font:500 max(9px,calc(11 * var(--u)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";color:var(--ink40)}
+.jr__nums span{width:0;display:flex;justify-content:center;transition:color .3s ease}
+.jr__nums span:first-child{justify-content:flex-start}
+.jr__nums span:last-child{justify-content:flex-end}
+.jr__nums span.is-on{color:var(--ink)}
+.jr__track{display:flex;align-items:flex-start;gap:calc(15.3 * var(--u));width:max-content;margin-top:calc(61 * var(--u));padding:0 0 0 calc(105 * var(--u));will-change:transform}
+/* карточка: кадр (фото или монтаж) на всю площадь, поверх — шапка «номер | название | прогресс» и описание внизу.
+   Растяжки свои, не из макета: тёплый тёмный с плавным спадом (много точек — без видимой границы), плюс мягкая тень у текста */
+.jr__step{position:relative;flex:none;width:calc(var(--jh) * 608.69 / 509);height:var(--jh);overflow:hidden;border-radius:calc(16 * var(--u));background:#f9f9f9;color:#fff;isolation:isolate}
+.jr__m{position:absolute;inset:0;overflow:hidden}
+.jr__m>img,.jr__m>video{position:absolute;top:0;left:-8%;width:116%;max-width:none;height:100%;object-fit:cover;translate:var(--px,0) 0}
+.jr__step::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(13,9,7,.62) 0%,rgba(13,9,7,.5) 8%,rgba(13,9,7,.36) 16%,rgba(13,9,7,.22) 24%,rgba(13,9,7,.11) 32%,rgba(13,9,7,.04) 39%,rgba(13,9,7,0) 46%),
+             linear-gradient(0deg,rgba(13,9,7,.68) 0%,rgba(13,9,7,.54) 8%,rgba(13,9,7,.38) 17%,rgba(13,9,7,.22) 26%,rgba(13,9,7,.1) 34%,rgba(13,9,7,.03) 41%,rgba(13,9,7,0) 48%)}
+.jr__c{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:space-between;padding:0 calc(25.7 * var(--u)) calc(31 * var(--u)) calc(26 * var(--u));text-shadow:0 0 calc(18 * var(--u)) rgba(13,9,7,.3)}
+/* шапка: номер | вертикальная черта от самого верха | название и подзаголовок | квадратики прогресса; снизу линия */
+.jr__top{position:relative;display:flex;align-items:flex-start;height:calc(83 * var(--u));border-bottom:1px solid rgba(255,255,255,.32)}
+.jr__no{flex:none;display:flex;align-items:flex-start;width:calc(70 * var(--u));margin:0;padding-top:calc(16 * var(--u));
+  font:500 calc(28 * var(--u))/1.39 "Involve",sans-serif;letter-spacing:-.07em}
+.jr__no span{margin:calc(2 * var(--u)) 0 0 calc(2 * var(--u));font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:0;color:rgba(255,255,255,.36)}
+.jr__top::before{content:"";position:absolute;left:calc(70 * var(--u));top:calc(1 * var(--u));width:1px;height:calc(82 * var(--u));background:rgba(255,255,255,.32)}
+.jr__name{flex:1;min-width:0;padding:calc(19 * var(--u)) 0 0 calc(16 * var(--u))}
+.jr__name h3{margin:0;font:500 max(15px,calc(21 * var(--u)))/1.39 "Involve",sans-serif}
+.jr__name p{margin:calc(-1 * var(--u)) 0 0;font:500 max(11px,calc(13 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(255,255,255,.74)}
+/* прогресс пути: закрашено столько квадратиков, какой это шаг */
+.jr__dots{flex:none;display:flex;gap:calc(2 * var(--u));padding-top:calc(24 * var(--u))}
+.jr__dots b{width:calc(6 * var(--u));height:calc(6 * var(--u));min-width:4px;min-height:4px;border-radius:1px;background:rgba(255,255,255,.29)}
+.jr__dots b.on{background:#fff}
+.jr__d{margin:0;max-width:calc(500 * var(--u));font:500 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;text-wrap:pretty}
+.jr__end{flex:none;align-self:stretch;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:calc(36 * var(--u));
+  height:var(--jh);padding:0 calc(160 * var(--u)) 0 calc(80 * var(--u))}
+.jr__end-h{margin:0;font:500 calc(59 * var(--u))/.9 "Involve",sans-serif}
+/* за белым листом пути — главный врач тоже листом со скруглённым верхом */
+.dk{margin-top:calc(-35 * var(--uw));border-radius:calc(35 * var(--uw)) calc(35 * var(--uw)) 0 0}
+
+/* ═════════ 7. СПЕЦИАЛИСТЫ И ЦЕНЫ ═════════
+   Карточка целиком (фото → кнопка) встаёт в окно под шапкой: высота фото от окна, 300…470 px кадра 1920.
+   Кадры с воздухом вокруг лица — _tools/team-air-img.cjs (голова ~ треть ширины, макушка на 17 %).
+   Фото — кнопка «подробнее о специалисте»: плашка «Подробнее +» видна всегда, при наведении синеет (app.js открывает .dp). */
+.tm__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(24 * var(--u));margin-top:calc(64 * var(--u))}
+.tm__card{display:flex;flex-direction:column}
+.tm__m{position:relative;display:block;width:100%;height:clamp(calc(300 * var(--u)),calc(100svh - 360 * var(--u)),calc(470 * var(--u)));
+  overflow:hidden;border-radius:var(--r);background:#e8e2da;cursor:pointer;text-align:left}
+.tm__m img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;scale:1;transition:transform 1.8s var(--out) var(--d,0s),scale 1.2s var(--out)}
+.tm__m:hover img{scale:1.04}
+.tm__m:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.tm__tag{position:absolute;left:calc(16 * var(--u));top:calc(16 * var(--u));padding:calc(7 * var(--u)) calc(11 * var(--u));border-radius:calc(4 * var(--u));
+  background:rgba(255,255,255,.88);font:500 max(9px,calc(11 * var(--u)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+/* «Подробнее +»: светлое стекло на фото — видно без наведения, что кадр открывается */
+.tm__more{position:absolute;right:calc(16 * var(--u));bottom:calc(16 * var(--u));display:flex;align-items:center;gap:calc(12 * var(--u));
+  height:calc(44 * var(--u));min-height:34px;padding:0 calc(5 * var(--u)) 0 calc(16 * var(--u));border-radius:calc(5 * var(--u));
+  background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.7);color:var(--ink);font:500 max(12px,calc(15 * var(--u)))/1 "Involve",sans-serif;
+  transition:background-color .45s ease,color .45s ease,box-shadow .45s ease}
+.tm__more i{position:relative;display:block;width:calc(34 * var(--u));height:calc(34 * var(--u));min-width:26px;min-height:26px;border-radius:calc(4 * var(--u));background:#fff;
+  transition:background-color .45s ease,rotate .6s var(--out)}
+.tm__more i::before,.tm__more i::after{content:"";position:absolute;left:50%;top:50%;width:calc(12 * var(--u));min-width:10px;height:1.5px;background:var(--ink);translate:-50% -50%;transition:background-color .45s ease}
+.tm__more i::after{rotate:90deg}
+.tm__m:hover .tm__more,.lf__m:hover .tm__more{background:var(--acc);color:#fff;box-shadow:inset 0 0 0 1px var(--acc)}
+.tm__m:hover .tm__more i,.lf__m:hover .tm__more i{background:rgba(255,255,255,.26);rotate:90deg}
+.tm__m:hover .tm__more i::before,.tm__m:hover .tm__more i::after,.lf__m:hover .tm__more i::before,.lf__m:hover .tm__more i::after{background:#fff}
+/* под фото — только главное (2026-10-17, «много навалено»): имя и цена в строку, под ними должность и услуга;
+   описание — в панели «Подробнее». Кнопка контурная, синеет при наведении — три синие полосы в ряд утомляли */
+.tm__info{display:grid;grid-template-columns:1fr auto;column-gap:calc(20 * var(--u));row-gap:calc(10 * var(--u));align-items:baseline;margin:calc(24 * var(--u)) 0 calc(22 * var(--u))}
+.tm__name{margin:0;font:500 max(18px,calc(30 * var(--u)))/1.1 "Involve",sans-serif;cursor:pointer;transition:color .3s ease}
+.tm__name:hover{color:var(--acc-d)}
+.tm__price{justify-self:end;font:500 max(18px,calc(30 * var(--u)))/1.1 "Involve",sans-serif;white-space:nowrap}
+.tm__role,.tm__svc{margin:0;font:500 max(9px,calc(12 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:var(--ink40)}
+.tm__svc{text-align:right}
+.kbtn--line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink20)}
+.kbtn--line>i{background:transparent;box-shadow:inset 1px 0 0 var(--ink20)}
+.kbtn--line:hover{background:var(--acc);color:#fff;box-shadow:inset 0 0 0 1px var(--acc)}
+.kbtn--line:hover>i{background:rgba(255,255,255,.26);box-shadow:none}
+
+/* ═════════ 8. ОТЗЫВЫ ═════════
+   Редизайн 2026-10-17 (второй заход): один ряд — синяя плашка рейтинга 405 и четыре видео одного размера 9:16 (≈296×527).
+   При наведении ролик играет без звука (app.js), по клику — плеер со звуком; плашка открывает панель с виджетом Карт. */
+.rw__row{display:grid;grid-template-columns:calc(405 * var(--u)) repeat(4,1fr);gap:calc(30 * var(--u));margin-top:calc(56 * var(--u))}
+.rw__rate,.rvf{position:relative;display:flex;flex-direction:column;width:100%;overflow:hidden;border-radius:calc(15 * var(--u));text-align:left;isolation:isolate}
+
+/* плашка рейтинга: 5,0 крупно, звёзды, оценки; на фоне — контур очков (две линзы и перемычка, как в знаке GO) */
+.rw__rate{justify-content:space-between;padding:calc(26 * var(--u)) calc(30 * var(--u)) calc(28 * var(--u));
+  background:radial-gradient(110% 80% at 100% 0%,#86A6D1 0%,rgba(134,166,209,0) 62%),var(--acc);color:#fff;cursor:pointer}
+.rw__go{position:absolute;z-index:-1;right:calc(-170 * var(--u));top:calc(-92 * var(--u));width:calc(560 * var(--u));max-width:none;height:auto;color:rgba(255,255,255,.2);
+  transition:transform 1.4s var(--out)}
+.rw__rate:hover .rw__go{transform:translateX(calc(-16 * var(--u)))}
+.rw__top{display:flex;justify-content:space-between;align-items:center;font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.rw__top i{display:grid;place-items:center;width:calc(45 * var(--u));height:calc(45 * var(--u));min-width:34px;min-height:34px;border-radius:calc(7 * var(--u));
+  background:rgba(255,255,255,.2);color:#fff;transition:background-color .4s ease,color .4s ease}
+.rw__top svg{width:calc(18 * var(--u));height:calc(18 * var(--u));min-width:14px;min-height:14px;transition:transform .5s var(--out)}
+.rw__rate:hover .rw__top i{background:#fff;color:var(--acc)}
+.rw__rate:hover .rw__top svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+.rw__bot{display:flex;flex-direction:column;align-items:flex-start}
+.rw__n{font:500 calc(150 * var(--u))/.78 "Involve",sans-serif;letter-spacing:-.03em}
+.rw__stars{display:flex;gap:calc(4 * var(--u));margin-top:calc(28 * var(--u))}
+.rw__stars svg{width:calc(20 * var(--u));height:calc(20 * var(--u));min-width:14px;min-height:14px}
+.rw__sub{margin-top:calc(12 * var(--u));font:400 max(12px,calc(15 * var(--u)))/1.4 "Involve",sans-serif;color:rgba(255,255,255,.86)}
+.rw__more{align-self:stretch;margin-top:calc(26 * var(--u));padding-top:calc(18 * var(--u));border-top:1px solid rgba(255,255,255,.3);
+  font:500 max(13px,calc(16 * var(--u)))/1 "Involve",sans-serif}
+
+/* видео: кадр во всю карточку — затемнение сверху под плашкой и снизу под подписью */
+.rvf{aspect-ratio:9/16;padding:0;background:#2a211c;color:#fff;cursor:pointer}
+.rvf__m{position:absolute;inset:0;overflow:hidden}
+.rvf__m img,.rvf__m video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rvf__m img{scale:1;transition:transform 1.8s var(--out) var(--d,0s),scale 1.2s var(--out)}
+.rvf:hover .rvf__m img{scale:1.04}
+.rvf__m video{opacity:0;transition:opacity .6s ease}
+.rvf.is-play .rvf__m video{opacity:1}
+.rvf::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(13,9,7,.32) 0%,rgba(13,9,7,.14) 12%,rgba(13,9,7,.03) 22%,rgba(13,9,7,0) 28%),
+             linear-gradient(0deg,rgba(13,9,7,.7) 0%,rgba(13,9,7,.52) 9%,rgba(13,9,7,.32) 18%,rgba(13,9,7,.15) 27%,rgba(13,9,7,.05) 35%,rgba(13,9,7,0) 42%)}
+.rvf__tag{position:absolute;z-index:2;left:calc(16 * var(--u));top:calc(16 * var(--u));padding:calc(9 * var(--u)) calc(12 * var(--u));border-radius:calc(7 * var(--u));
+  background:rgba(255,255,255,.56);box-shadow:inset 0 0 0 1px #fff;font:500 max(9px,calc(11 * var(--u)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.rvf__play{position:absolute;z-index:2;left:50%;top:50%;display:grid;place-items:center;width:calc(70 * var(--u));height:calc(70 * var(--u));min-width:50px;min-height:50px;
+  border-radius:50%;translate:-50% -50%;background:rgba(255,255,255,.92);color:var(--ink);transition:background-color .4s ease,color .4s ease,scale .6s var(--out)}
+.rvf__play svg{width:100%;height:100%}
+.rvf:hover .rvf__play{background:var(--acc);color:#fff;scale:1.08}
+.rvf__cap{position:absolute;z-index:2;left:calc(22 * var(--u));right:calc(22 * var(--u));bottom:calc(20 * var(--u));display:flex;justify-content:space-between;align-items:flex-end;gap:calc(10 * var(--u))}
+.rvf__cap b{font:500 max(15px,calc(21 * var(--u)))/1.2 "Involve",sans-serif}
+.rvf__cap span{font:500 max(9px,calc(12 * var(--u)))/1.4 "Manrope",sans-serif;font-feature-settings:"tnum";color:rgba(255,255,255,.78)}
+
+/* ═════════ 9. ЖИЗНЬ ЦЕНТРА (карточки собирает app.js из news.js) ═════════ */
+.lf__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(24 * var(--u));margin-top:calc(80 * var(--u))}
+.lf__card{display:flex;flex-direction:column;align-items:flex-start}
+/* кадр и заголовок открывают статью поверх страницы (app.js → .ar); на кадре — та же плашка, что у специалистов, «Читать +» */
+.lf__m{position:relative;display:block;width:100%;aspect-ratio:554/400;overflow:hidden;border-radius:var(--r);background:#e8e2da;cursor:pointer}
+.lf__m img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;scale:1;transition:transform 1.8s var(--out) var(--d,0s),scale 1.2s var(--out)}
+.lf__m:hover img{scale:1.04}
+.lf__card h3 button{text-align:left;font:inherit;transition:color .3s ease}
+.lf__card h3 button:hover{color:var(--acc-d)}
+.lf__meta{display:flex;align-items:center;gap:calc(9 * var(--u));margin:calc(24 * var(--u)) 0 0;font:500 max(9px,calc(12 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:var(--ink40)}
+.lf__meta i{flex:none;width:calc(6 * var(--u));height:calc(6 * var(--u));min-width:4px;min-height:4px;background:var(--c,#6E92C2)}
+.lf__meta em{font-style:normal;color:var(--ink)}
+.lf__card h3{margin:calc(12 * var(--u)) 0 0;font:500 max(17px,calc(26 * var(--u)))/1.2 "Involve",sans-serif}
+.lf__txt{margin:calc(12 * var(--u)) 0 0;font:400 max(12px,calc(15 * var(--u)))/1.45 "Involve",sans-serif;color:var(--ink60)}
+button.lf__a{cursor:pointer}
+.lf__a{display:inline-flex;align-items:center;gap:calc(8 * var(--u));margin-top:calc(20 * var(--u));padding-bottom:calc(5 * var(--u));border-bottom:1px solid var(--ink20);
+  font:500 max(13px,calc(15 * var(--u)))/1 "Involve",sans-serif;transition:border-color .3s ease}
+.lf__a svg{width:calc(14 * var(--u));height:calc(14 * var(--u));min-width:11px;min-height:11px;transition:transform .5s var(--out)}
+.lf__a:hover{border-color:var(--ink)}
+.lf__a:hover svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+
+/* ═════════ 10. ВОПРОСЫ ═════════
+   Редизайн 2026-10-17: молочный лист со скруглённым верхом 35 наезжает на «Жизнь центра».
+   Слева 550 — заголовок, подводка и кнопка Telegram, колонка держится на месте, пока листается список.
+   Справа — вопросы белыми карточками через 10; квадрат с плюсом — как «Подробнее +» у специалистов. */
+.fq{margin-top:calc(-35 * var(--u));border-radius:calc(35 * var(--u)) calc(35 * var(--u)) 0 0}
+.fq .sx__in{padding-top:calc(142 * var(--u));padding-bottom:calc(185 * var(--u))}
+.fq__grid{display:grid;grid-template-columns:calc(550 * var(--u)) 1fr;column-gap:calc(30 * var(--u));align-items:start}
+.fq__head{position:sticky;top:calc(130 * var(--u))}
+.fq__lead{max-width:calc(420 * var(--u));margin:calc(14 * var(--u)) 0 calc(40 * var(--u))}
+.fq__list{display:flex;flex-direction:column;gap:calc(10 * var(--u))}
+.fq__item{border-radius:calc(15 * var(--u));background:#fff;transition:box-shadow .5s ease,opacity .9s ease var(--d,0s),transform 1.1s var(--out) var(--d,0s)}
+.fq__item.is-open{box-shadow:0 calc(20 * var(--u)) calc(50 * var(--u)) rgba(7,7,7,.06)}
+.fq__q{display:grid;grid-template-columns:calc(70 * var(--u)) 1fr calc(51 * var(--u));align-items:center;width:100%;min-height:calc(108 * var(--u));
+  padding:calc(24 * var(--u)) calc(26 * var(--u)) calc(24 * var(--u)) calc(34 * var(--u));text-align:left;color:var(--ink);cursor:pointer}
+.fq__n{font:500 max(10px,calc(13 * var(--u)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";color:var(--acc)}
+.fq__t{padding-right:calc(30 * var(--u));font:500 max(16px,calc(24 * var(--u)))/1.3 "Involve",sans-serif;transition:color .3s ease}
+.fq__q:hover .fq__t{color:var(--acc-d)}
+.fq__pm{position:relative;width:calc(51 * var(--u));height:calc(51 * var(--u));min-width:38px;min-height:38px;border-radius:calc(7 * var(--u));background:#F3EEE8;transition:background-color .4s ease}
+.fq__pm::before,.fq__pm::after{content:"";position:absolute;left:50%;top:50%;width:calc(13 * var(--u));min-width:10px;height:1.5px;background:var(--ink);
+  translate:-50% -50%;transition:rotate .5s var(--out),background-color .4s ease}
+.fq__pm::after{rotate:90deg}
+.fq__q:hover .fq__pm{background:#EAE2D8}
+.fq__item.is-open .fq__pm{background:var(--acc)}
+.fq__item.is-open .fq__pm::before,.fq__item.is-open .fq__pm::after{background:#fff}
+.fq__item.is-open .fq__pm::after{rotate:0deg}
+.fq__a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--io)}
+.fq__item.is-open .fq__a{grid-template-rows:1fr}
+.fq__a>div{overflow:hidden}
+.fq__a p{margin:0;max-width:calc(860 * var(--u));padding:0 calc(110 * var(--u)) calc(34 * var(--u)) calc(104 * var(--u));
+  font:400 max(13px,calc(17 * var(--u)))/1.55 "Involve",sans-serif;color:var(--ink60);opacity:0;transform:translateY(calc(-8 * var(--u)));transition:opacity .3s ease,transform .5s var(--out)}
+.fq__item.is-open .fq__a p{opacity:1;transform:none;transition:opacity .5s ease .15s,transform .7s var(--out) .1s}
+
+/* ═════════ 11. ЗАПИСЬ И КОНТАКТЫ ═════════
+   Редизайн 2026-10-17: камень со скруглённым верхом 35 (наезжает на «Вопросы») и низом 50 (наезжает на подвал).
+   Сцена 1710×680: карта во всю ширину — своя статичная серая; поверх слева — стеклянная карточка 560:
+   шапка со статусом, адрес и метро, телефон и часы, запись и мессенджеры. Линии внутри стекла белые — как в «Компетенциях».
+   Точка центра — правее карточки, Сенная площадь входит справа. */
+.ct{z-index:10;margin-top:calc(-35 * var(--u));border-radius:calc(35 * var(--u)) calc(35 * var(--u)) calc(50 * var(--u)) calc(50 * var(--u))}
+.ct .sx__in{padding:calc(150 * var(--u)) calc(105 * var(--u)) calc(151 * var(--u))}
+.ct__stage{position:relative;display:flex;align-items:center;box-sizing:border-box;min-height:calc(680 * var(--u));padding:calc(40 * var(--u)) 0;margin-top:calc(56 * var(--u));overflow:hidden;border-radius:calc(20 * var(--u));background:#E4E2DF;isolation:isolate}
+
+/* карта: живая — Leaflet + растровые тайлы Яндекса (проекция EPSG:3395) в сером, тянется мышью, масштаб кнопками справа внизу;
+   колесо листает страницу. Пока карта не загрузилась (или если тайлы недоступны) — статичный снимок _tools/map-wide.cjs.
+   Метка центра — на (900, 360) кадра сцены, правее стеклянной карточки; на ярлыке метки — миниатюра входа, клик — фото крупно */
+.ct__map{position:absolute;inset:0;z-index:0;display:block;overflow:hidden;background:#E4E2DF}
+.ct__still{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .8s ease}
+.ct__map.is-live .ct__still{opacity:0;pointer-events:none}
+.ct__lf{position:absolute;inset:0;background:transparent;font:inherit;cursor:grab}
+.ct__lf.leaflet-dragging,.ct__lf.leaflet-dragging .leaflet-interactive{cursor:grabbing}
+.ct__lf .leaflet-tile-pane{filter:grayscale(1) brightness(1.05) contrast(.92)}
+.ct__lf .leaflet-tile{opacity:0;transition:opacity .5s ease}
+.ct__lf .leaflet-tile-loaded{opacity:1}
+.ct__lf .leaflet-marker-icon.ct__mk{background:none;border:0}
+.ct__ypin{position:absolute;left:0;top:0;width:26px;height:40px;display:block}
+.ct__ypin>svg{display:block;width:100%;height:100%;color:var(--acc);filter:drop-shadow(0 4px 10px rgba(7,7,7,.25));pointer-events:none}
+/* ярлык: чёрная плашка, слева миниатюра входа с «+», справа название и «Фото входа» */
+.ct__tag{position:absolute;left:calc(100% + 10px);top:13px;transform:translateY(-50%);display:flex;align-items:center;gap:calc(12 * var(--u));
+  padding:calc(6 * var(--u)) calc(16 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u));border:0;border-radius:calc(5 * var(--u));background:#070707;color:#fff;
+  text-align:left;white-space:nowrap;cursor:pointer;box-shadow:0 10px 30px rgba(7,7,7,.18);transition:background-color .4s ease}
+.ct__th{position:relative;flex:none;display:block;width:calc(72 * var(--u));height:calc(54 * var(--u));min-width:56px;min-height:42px;overflow:hidden;border-radius:calc(3 * var(--u))}
+.ct__th img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .9s var(--out)}
+.ct__th i{position:absolute;right:calc(5 * var(--u));bottom:calc(5 * var(--u));width:calc(18 * var(--u));height:calc(18 * var(--u));min-width:15px;min-height:15px;border-radius:calc(3 * var(--u));background:#fff;transition:rotate .5s var(--out)}
+.ct__th i::before,.ct__th i::after{content:"";position:absolute;left:50%;top:50%;width:46%;height:1.3px;background:#070707;translate:-50% -50%}
+.ct__th i::after{rotate:90deg}
+.ct__tt{display:flex;flex-direction:column;gap:calc(6 * var(--u))}
+.ct__tt b{font:500 max(9px,calc(11 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;font-weight:400}
+.ct__tt em{font:400 max(11px,calc(13 * var(--u)))/1 "Involve",sans-serif;font-style:normal;color:rgba(255,255,255,.6);transition:color .4s ease}
+.ct__tag:hover{background:var(--acc-d,#4E73A6)}
+.ct__tag:hover .ct__th img{transform:scale(1.08)}
+.ct__tag:hover .ct__th i{rotate:90deg}
+.ct__tag:hover .ct__tt em{color:#fff}
+.ct__hint{position:absolute;z-index:2;right:calc(24 * var(--u));top:calc(24 * var(--u));display:flex;align-items:center;gap:calc(10 * var(--u));padding:calc(13 * var(--u)) calc(16 * var(--u));
+  border-radius:var(--r5);background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px #fff;font:500 max(12px,calc(15 * var(--u)))/1 "Involve",sans-serif;color:var(--ink);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:background-color .4s ease,color .4s ease,box-shadow .4s ease}
+.ct__hint svg{width:calc(15 * var(--u));height:calc(15 * var(--u));min-width:12px;min-height:12px;transition:transform .5s var(--out)}
+.ct__hint:hover{background:var(--acc);color:#fff;box-shadow:inset 0 0 0 1px var(--acc)}
+.ct__hint:hover svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+/* масштаб: две стеклянные кнопки столбиком, как плашка «Открыть в Яндекс Картах» */
+.ct__zoom{position:absolute;z-index:2;right:calc(24 * var(--u));bottom:calc(34 * var(--u));display:flex;flex-direction:column;gap:calc(6 * var(--u))}
+.ct__zoom button{position:relative;width:calc(44 * var(--u));height:calc(44 * var(--u));min-width:34px;min-height:34px;padding:0;border:0;border-radius:var(--r5);cursor:pointer;
+  background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px #fff;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--ink);transition:background-color .4s ease,color .4s ease}
+.ct__zoom i{position:absolute;left:50%;top:50%;width:calc(13 * var(--u));min-width:10px;height:1.5px;background:currentColor;translate:-50% -50%}
+.ct__zoom i+i{rotate:90deg}
+.ct__zoom button:hover{background:var(--acc);color:#fff}
+.ct__osm{position:absolute;z-index:2;right:calc(14 * var(--u));bottom:calc(10 * var(--u));font:500 max(8px,calc(10 * var(--u)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";color:var(--ink40);pointer-events:none}
+
+/* фото входа: два кадра рядом (угол дома и дверь) с подписью; окно вырастает из миниатюры на метке */
+.ent__box{display:grid;grid-template-columns:1.5fr .6667fr;gap:12px;overflow:visible;border-radius:0;background:none;box-shadow:none}
+.ent__box>img{display:block;height:var(--eh);border-radius:12px;object-fit:cover;box-shadow:0 30px 100px rgba(0,0,0,.4)}
+.ent__box>img{width:100%}
+.ent__cap{grid-column:1/-1;display:flex;justify-content:space-between;gap:24px;margin:8px 0 0;color:#fff;font:400 15px/1.4 "Involve",sans-serif}
+.ent__cap b{font-weight:500;font-size:19px}
+.ent__cap span{color:rgba(255,255,255,.6)}
+
+/* стеклянная карточка: белый 62 % с размытием карты под ним, белая обводка */
+.ct__card{position:relative;z-index:4;flex:none;margin-left:calc(40 * var(--u));width:max(calc(560 * var(--u)),400px);display:flex;flex-direction:column;overflow:hidden;
+  border-radius:calc(20 * var(--u));background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.95),0 calc(30 * var(--u)) calc(80 * var(--u)) rgba(7,7,7,.12)}
+.ct__ph{display:flex;justify-content:space-between;align-items:center;gap:calc(16 * var(--u));box-sizing:border-box;height:calc(62 * var(--u));min-height:44px;margin:0;padding:0 calc(34 * var(--u));
+  border-bottom:1px solid #fff;white-space:nowrap;font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase}
+.ct__ph>span:first-child{display:flex;align-items:center;gap:calc(10 * var(--u));color:#73562C}
+.ct__ph>span:first-child i{flex:none;width:calc(4 * var(--u));height:calc(4 * var(--u));min-width:3px;min-height:3px;background:var(--dot)}
+/* открыто сейчас или нет — по времени Москвы (app.js); у «открыто» точка дышит */
+.ct__now{display:flex;align-items:center;gap:calc(9 * var(--u));color:var(--ink40)}
+.ct__now i{position:relative;flex:none;width:calc(7 * var(--u));height:calc(7 * var(--u));min-width:6px;min-height:6px;border-radius:50%;background:var(--ink20)}
+.ct__now.is-open{color:var(--ink)}
+.ct__now.is-open i{background:#4FA466}
+.ct__now.is-open i::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 1.5px #4FA466;animation:ctNow 2.4s var(--out) infinite}
+@keyframes ctNow{0%{transform:scale(1);opacity:.9}100%{transform:scale(3);opacity:0}}
+.ct__row{padding:calc(30 * var(--u)) calc(34 * var(--u));border-bottom:1px solid #fff}
+.ct__addr{margin:0;font:500 max(22px,calc(36 * var(--u)))/1.1 "Involve",sans-serif}
+.ct__metro{display:flex;flex-wrap:wrap;gap:calc(6 * var(--u)) calc(22 * var(--u));margin:calc(14 * var(--u)) 0 0;font:400 max(12px,calc(15 * var(--u)))/1.4 "Involve",sans-serif;color:var(--ink60)}
+.ct__metro i{display:inline-block;width:calc(8 * var(--u));height:calc(8 * var(--u));min-width:6px;min-height:6px;margin-right:calc(8 * var(--u));border-radius:50%;background:var(--c);vertical-align:.08em}
+.ct__route{display:inline-flex;align-items:center;gap:calc(8 * var(--u));margin-top:calc(18 * var(--u));padding-bottom:calc(5 * var(--u));border-bottom:1px solid var(--ink20);
+  font:500 max(13px,calc(15 * var(--u)))/1 "Involve",sans-serif;transition:border-color .3s ease}
+.ct__route svg{width:calc(14 * var(--u));height:calc(14 * var(--u));min-width:11px;min-height:11px;transition:transform .5s var(--out)}
+.ct__route:hover{border-color:var(--ink)}
+.ct__route:hover svg{transform:translate(calc(2 * var(--u)),calc(-2 * var(--u)))}
+.ct__tel{display:inline-block;font:500 max(20px,calc(32 * var(--u)))/1.15 "Involve",sans-serif;white-space:nowrap;transition:color .3s ease}
+.ct__tel:hover{color:var(--acc-d)}
+.ct__hours{margin:calc(10 * var(--u)) 0 0;font:400 max(12px,calc(15 * var(--u)))/1.4 "Involve",sans-serif;color:var(--ink60)}
+.ct__go{display:flex;gap:calc(8 * var(--u));padding:calc(26 * var(--u)) calc(34 * var(--u)) calc(30 * var(--u))}
+.ct__go .kbtn{flex:1}
+.ct__go .kbtn>span{flex:1;text-align:center}
+.ct__ico{display:grid;place-items:center;flex:none;width:calc(52 * var(--u));height:calc(52 * var(--u));min-width:40px;min-height:40px;border-radius:var(--r5);
+  background:rgba(255,255,255,.72);box-shadow:inset 0 0 0 1px #fff;color:var(--ink);transition:background-color .4s ease,color .4s ease,box-shadow .4s ease}
+.ct__ico svg{width:calc(21 * var(--u));height:calc(21 * var(--u));min-width:16px;min-height:16px}
+.ct__ico:hover{background:var(--acc);color:#fff;box-shadow:inset 0 0 0 1px var(--acc)}
+
+@media (prefers-reduced-motion:reduce){
+  .rv,.rv-shot,.rv-shot img,.sx__line>span{transition:none!important;opacity:1!important;transform:none!important;clip-path:none!important}
+}
+
+
+/* ═════════ Figma «Основа» 60:783 (2026-10-17): специалисты, отзывы, жизнь центра, контакты ═════════
+   Заголовки этих блоков — 59 (не 70), подводки справа убраны. «К кому записаться» и «Жизнь центра» — белые листы
+   со скруглённым верхом 35, между ними отзывы на молочном. Отступы — от слоёв макета (кадр 1920), резина та же --u. */
+.tm .sx__h,.rw .sx__h,.lf .sx__h,.fq .sx__h,.ct .sx__h{font-size:calc(59 * var(--u))}
+.tm,.lf{background:#fff;border-radius:calc(35 * var(--u)) calc(35 * var(--u)) 0 0}
+
+/* «К кому записаться»: лист на 74 ниже «После выдачи», подпись на 125 от края листа, карточки 550 × 666 через 30 */
+.tm{margin-top:calc(-76 * var(--u))}
+.tm .sx__in{padding:calc(125 * var(--u)) calc(105 * var(--u)) calc(162 * var(--u))}
+.tm__grid{gap:calc(30 * var(--u));margin-top:calc(48 * var(--u))}
+/* кадр — экспорт карточки макета (_tools/team-figma-img.cjs); в низком окне кадр ниже, чтобы карточка с кнопкой входила целиком */
+.tm__m{height:min(calc(666 * var(--u)),calc(100svh - 280 * var(--u)));border-radius:calc(15 * var(--u));background:#f7f7f7}
+.tm__m img{object-position:50% 40%}
+/* «Подробнее +» — 216 × 51: белый 56 % с белой обводкой, квадрат 45 с плюсом */
+.tm .tm__more{right:calc(18 * var(--u));bottom:calc(19 * var(--u));justify-content:space-between;gap:0;box-sizing:border-box;width:calc(216 * var(--u));min-width:170px;height:calc(51 * var(--u));min-height:38px;
+  padding:0 calc(3 * var(--u)) 0 0;border-radius:calc(7 * var(--u));background:rgba(255,255,255,.56);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 0 0 1px #fff}
+.tm .tm__more>span{flex:1;text-align:center}
+.tm .tm__more i{width:calc(45 * var(--u));height:calc(45 * var(--u));min-width:33px;min-height:33px;border-radius:calc(4.6 * var(--u))}
+.tm .tm__more i::before,.tm .tm__more i::after{width:calc(10.7 * var(--u));min-width:9px;height:1.3px}
+.tm__info{row-gap:calc(8 * var(--u));margin:calc(26 * var(--u)) 0 calc(20 * var(--u))}
+.tm__name,.tm__price{font-size:max(17px,calc(25 * var(--u)));line-height:1.32}
+.tm__price{color:var(--acc)}
+.tm .kbtn{height:calc(55 * var(--u));min-height:42px;margin-top:auto;font-size:max(13px,calc(17 * var(--u)))}
+.tm .kbtn>i{width:calc(55 * var(--u))}
+.tm .kbtn--wide>span{padding-left:calc(55 * var(--u))}
+
+/* порядок с 2026-10-17: врач → отзывы → вопросы → специалисты → жизнь центра → контакты.
+   «Отзывы» — молочный лист со скруглённым верхом 35 поверх «Главного врача»; «Вопросы» продолжают их на том же фоне,
+   поэтому сверху у них меньше поля; «Жизнь центра» после белого листа специалистов — молочным листом, чтобы стык был виден */
+.rw{margin-top:calc(-35 * var(--u));border-radius:calc(35 * var(--u)) calc(35 * var(--u)) 0 0}
+.rw .sx__in{padding-top:calc(142 * var(--u))}
+.rw + .fq .sx__in{padding-top:calc(40 * var(--u))}
+.lf{background:var(--paper)}
+
+/* «Жизнь центра»: лист на 109 ниже отзывов, подпись на 142 от края (кнопку Telegram-канала пользователь убрал) */
+.lf{margin-top:calc(-41 * var(--u))}
+.lf .sx__in{padding:calc(142 * var(--u)) calc(105 * var(--u)) calc(163 * var(--u))}
+.lf__grid{gap:calc(22 * var(--u));margin-top:calc(59 * var(--u))}
+.lf__card h3,.lf__txt{margin-top:calc(11 * var(--u))}
+
+/* шторка сцены (.rv-shot) масштабирует все картинки внутри с переходом 1,8 с — тайлам карты это не нужно */
+.ct__stage.rv-shot .ct__lf img{transition:opacity .5s ease}

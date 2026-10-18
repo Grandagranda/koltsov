@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="ru" class="is-loading">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F9F5F2" id="themeColor">
+<title>Центр коррекции зрения доктора Кольцова — подбор очков в Санкт-Петербурге</title>
+<meta name="description" content="Экспертный подбор очковой коррекции в центре Петербурга: астигматизм, двоение, косоглазие, призматическая коррекция. Главный врач — офтальмолог Александр Кольцов. Казначейская, 4/16.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts/fonts.css?v=1017">
+<link rel="stylesheet" href="base.css?v=1037">
+<link rel="stylesheet" href="hero.css?v=1029">
+<link rel="stylesheet" href="cases.css?v=1020">
+<link rel="stylesheet" href="about.css?v=1034">
+<link rel="stylesheet" href="vendor/leaflet.css" media="(min-width: 901px) and (orientation: landscape), (min-width: 1200px)">
+<link rel="stylesheet" href="sections.css?v=28">
+<link rel="stylesheet" href="footer.css?v=15">
+<link rel="stylesheet" href="overlays.css?v=5">
+<!-- телефон и планшет вертикально (до 900 px, а вертикальный экран — до 1199 px, напр. iPad Pro 1024×1366):
+     вся сенсорная вёрстка — отдельным файлом поверх ПК-стилей; то же условие в app.js (mqM) и base.css (.m-only) -->
+<link rel="stylesheet" href="mobile.css?v=11" media="(max-width: 900px), (max-width: 1199px) and (orientation: portrait)">
+</head>
+<body>
+<!-- Страница собирается из admin/template.html + data/content.json (админка → «Опубликовать», или node admin/build.js).
+     Правки вёрстки — в admin/template.html, тексты — в админке. -->
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- знак центра: «GO» в квадрате, буквы складываются в очки -->
+    <symbol id="go" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2.1" y="2.1" width="43.8" height="43.8"/><path d="M2.1 25H9.4M20.4 20.3A7 7 0 1 0 23.4 25H25.6"/><circle cx="32.6" cy="25" r="7"/><path d="M39.6 25h6.3"/></g></symbol>
+    <!-- кролик сидит на краю, лапы свешиваются вниз — как фигурка на полке в зале -->
+    <g id="rb-shape">
+      <ellipse cx="22.6" cy="21" rx="4.4" ry="16.5" transform="rotate(-13 22.6 21)"/>
+      <ellipse cx="37.6" cy="20" rx="4.4" ry="17.5" transform="rotate(15 37.6 20)"/>
+      <ellipse cx="30" cy="44" rx="10.4" ry="11"/>
+      <ellipse cx="30" cy="66" rx="12.6" ry="15.4"/>
+      <rect x="20.2" y="68" width="8" height="40" rx="4"/>
+      <rect x="31.8" y="68" width="8" height="40" rx="4"/>
+      <ellipse cx="23.4" cy="108" rx="6.2" ry="4.2"/>
+      <ellipse cx="36.6" cy="108" rx="6.2" ry="4.2"/>
+    </g>
+    <symbol id="rabbit" viewBox="-4 -2 68 118" overflow="visible">
+      <use href="#rb-shape" fill="none" stroke="var(--rb-line,#3B2920)" stroke-width="2.6"/>
+      <use href="#rb-shape" fill="var(--rb-fill,#fff)"/>
+      <g fill="none" stroke="var(--rb-line,#3B2920)" stroke-width="1.3" stroke-linecap="round">
+        <path d="M22.8 21.5c.6-6 1-12 .3-19M37.4 20.5c-.3-6.5-.9-12.6-2.6-18.6" opacity=".22"/>
+        <path d="M24.6 79c.4 9 .4 18 .2 27M35.4 79c-.4 9-.4 18-.2 27" opacity=".28"/>
+        <circle cx="25.6" cy="44.6" r="4.1"/><circle cx="34.4" cy="44.6" r="4.1"/>
+        <path d="M29.6 44.2q.4-.9.8 0M21.5 44.2l-2.4-1.4M38.5 44.2l2.4-1.4"/>
+      </g>
+      <ellipse cx="30" cy="51.4" rx="1.3" ry=".9" fill="var(--rb-line,#3B2920)" opacity=".7"/>
+    </symbol>
+    <symbol id="i-arr" viewBox="0 0 18 18"><path d="M2 9h13M10 4l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-arr-up" viewBox="0 0 18 18"><path d="M4.5 13.5l9-9M6 4.5h7.5V12" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 18 18"><path d="M5 2.8v12.4L15 9z" fill="currentColor"/></symbol>
+    <symbol id="i-x" viewBox="0 0 18 18"><path d="M3.5 3.5l11 11M14.5 3.5l-11 11" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-star" viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.9l-5.2 2.8 1-5.8L1.5 7.8l5.9-.8z" fill="currentColor"/></symbol>
+    <symbol id="i-tg" viewBox="0 0 24 24"><path d="M21.4 4.2 2.9 11.3c-1.3.5-1.2 1.2-.2 1.5l4.7 1.5 1.8 5.6c.2.6.4.8.9.8.4 0 .6-.2.9-.4l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.5c.3-1.3-.5-1.8-1.4-1.4ZM9.2 14l8.4-5.3c.4-.3.8-.1.5.2l-7.1 6.4-.3 3.1L9.2 14Z" fill="currentColor"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path d="M12 2.2a9.7 9.7 0 0 0-8.4 14.6L2.2 21.8l5.1-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1c0 1.3.9 2.5 1 2.6.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.4-.6 1.6-1.2.2-.6.2-1.1.1-1.2l-.5-.2Z" fill="currentColor"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M12.2 2.5C6.9 2.5 3 6.3 3 11.8c0 2.2.6 4.6 1.5 5.9.3.5.5.9.3 1.6-.2 1-.7 2.1-.1 2.5.5.3 1.6-.2 2.6-.8.5-.3 1-.3 1.5-.1 1.1.4 2.2.6 3.4.6 5.3 0 9.3-4 9.3-9.5S17.5 2.5 12.2 2.5Zm.1 15.4c-1 0-1.9-.2-2.7-.6-.4-.2-.9-.2-1.3.1-.4.2-.8.4-1 .3-.1-.1 0-.5.1-.9.1-.5 0-1-.3-1.4-.6-1-1-2.2-1-3.6 0-3.6 2.7-6.1 6.2-6.1s6.1 2.6 6.1 6.1-2.6 6.1-6.1 6.1Z" fill="currentColor"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M21.5 16.9v2.8a1.9 1.9 0 0 1-2 1.9A18.8 18.8 0 0 1 2.4 4.5a1.9 1.9 0 0 1 1.9-2h2.8a1.9 1.9 0 0 1 1.9 1.6c.1.9.3 1.8.6 2.6a1.9 1.9 0 0 1-.4 2L8 9.9a15.2 15.2 0 0 0 6.1 6.1l1.2-1.2a1.9 1.9 0 0 1 2-.4c.8.3 1.7.5 2.6.6a1.9 1.9 0 0 1 1.6 1.9Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 2.8h8.2L19 7.6v13.6H6zM14 2.8v5h5M9 12.2h7M9 15.6h7M9 19h4.5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-vk" viewBox="0 0 24 24"><path d="M12.8 18.2C6.6 18.2 3 13.9 2.9 6.8H6c.1 5.2 2.4 7.4 4.2 7.9V6.8h2.9v4.5c1.8-.2 3.7-2.2 4.3-4.5h2.9a8.6 8.6 0 0 1-3.9 5.6 9 9 0 0 1 4.6 5.8h-3.2a5.6 5.6 0 0 0-4.7-4.1v4.1h-.3Z" fill="currentColor"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/></g></symbol>
+    <symbol id="i-call" viewBox="0 0 16 16"><path d="M12.22 15c-.61 0-1.47-.22-2.75-.94-1.56-.87-2.77-1.68-4.32-3.23C3.65 9.34 2.93 8.37 1.9 6.51.76 4.42.95 3.32 1.17 2.85c.26-.56.65-.89 1.15-1.22.28-.19.58-.35.9-.48l.08-.04c.15-.07.39-.17.68-.06.2.07.38.23.65.5.57.56 1.35 1.81 1.63 2.42.2.41.32.69.32 1 0 .35-.18.63-.4.93l-.12.16c-.24.31-.29.4-.26.56.07.33.59 1.29 1.45 2.14.85.85 1.79 1.34 2.11 1.41.17.04.26-.02.59-.27l.14-.1c.33-.25.6-.43.95-.43.3 0 .56.13.99.35.56.28 1.85 1.05 2.41 1.62.27.27.43.45.5.65.11.3.01.53-.06.69l-.04.09a5.6 5.6 0 0 1-.48.89c-.33.5-.67.88-1.23 1.15-.29.13-.6.2-.92.2Z" fill="currentColor"/></symbol>
+    <symbol id="i-glasses" viewBox="0 0 30 12"><g fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="6.5" r="4.6"/><circle cx="23" cy="6.5" r="4.6"/><path d="M11.6 6.2q3.4-2.6 6.8 0M2.4 6.5H.6M27.6 6.5h1.8"/></g></symbol>
+  </defs>
+</svg>
+
+<!-- ═════════ ШАПКА ═════════ -->
+<header class="hd is-hidden" id="hd">
+  <a class="hd__logo" href="#top" aria-label="Центр коррекции зрения доктора Кольцова — наверх"><img src="img/logo.png" alt="Центр коррекции зрения доктора Кольцова"></a>
+  <nav class="hd__nav" aria-label="Разделы">
+    <a href="#about">О&nbsp;центре</a>
+    <a href="#cases">С&nbsp;чем приходят</a>
+    <a href="#doctor">Главный врач</a>
+    <a href="#journey">Как проходит</a>
+    <a href="#reviews">Отзывы</a>
+    <a href="#prices">Цены</a>
+    <a href="#contacts">Контакты</a>
+  </nav>
+  <div class="hd__right">
+    <a class="hd__tel" href="tel:+79500241177">+7 950 024 11 77</a>
+    <a class="hd__cta" href="#book" data-book><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+    <!-- телефон: звонок и меню -->
+    <a class="hd__ico m-only" href="tel:+79500241177" aria-label="Позвонить: +7 950 024 11 77"><svg><use href="#i-call"/></svg></a>
+    <button class="hd__ico hd__burger m-only" type="button" data-menu aria-label="Меню" aria-controls="mm" aria-expanded="false"><i></i><i></i></button>
+  </div>
+</header>
+
+<main>
+
+<!-- ═════════ 1. ПЕРВЫЙ ЭКРАН ═════════
+     по Figma (s8aXHdn1…, кадр 1:3, 1920×898): видео зала, затемнения, Involve + Manrope (hero.css).
+     Всё в единицах --u = 1px кадра 1920: экран тянется и сужается целиком.
+     По прокрутке сцена закреплена: заголовок уходит, видео темнеет, по словам проявляется мысль (app.js). -->
+<section class="hv" id="top">
+ <div class="hv__stage">
+  <div class="hv__media" aria-hidden="true">
+    <!-- ролик выбирается по экрану (скрипт сразу под первым экраном): на телефоне — вертикальный кроп 608×1080, 2 МБ вместо 10,7 -->
+    <video class="hv__video" id="hvVideo" data-src="video/hero.mp4" data-poster="video/hero.jpg" data-src-m="video/hero-m.mp4" data-poster-m="video/hero-m.jpg" muted loop playsinline autoplay preload="auto"></video>
+  </div>
+  <div class="hv__shade" aria-hidden="true"></div>
+  <div class="hv__dim" id="hvDim" aria-hidden="true"></div>
+
+  <header class="hv__nav">
+    <a class="hv__logo" href="#top"><img src="img/hv-logo.png" alt="Центр коррекции зрения доктора Кольцова"></a>
+    <nav class="hv__links" aria-label="Разделы">
+      <a href="#about">О&nbsp;нас</a>
+      <a href="#cases">С&nbsp;чем приходят</a>
+      <a href="#doctor">Главный врач</a>
+      <a href="#journey">Как проходит</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#prices">Цены</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <a class="hv__tel" href="tel:+79500241177">+7 950 024 11 77</a>
+    <a class="hv__cta" href="#book" data-book><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+    <div class="hv__mbtns m-only">
+      <a class="hv__ico" href="tel:+79500241177" aria-label="Позвонить: +7 950 024 11 77"><svg><use href="#i-call"/></svg></a>
+      <button class="hv__ico hd__burger" type="button" data-menu aria-label="Меню" aria-controls="mm" aria-expanded="false"><i></i><i></i></button>
+    </div>
+  </header>
+
+  <div class="hv__frame" id="hvBody">
+  <p class="hv__kicker" data-scramble><span class="d-only">Центр коррекции зрения доктора Кольцова&nbsp;— Санкт-Петербург</span><span class="m-only">Центр коррекции зрения доктора Кольцова</span></p>
+  <h1 class="hv__h"><span class="sr">Подбор очков в Санкт-Петербурге. </span><span class="hv__line hv__line--d"><span>Диагностика зрения</span></span><span class="hv__line hv__line--d"><span>и&nbsp;точный подбор очков</span></span><span class="hv__line m-only"><span>Диагностика</span></span><span class="hv__line m-only"><span>зрения и&nbsp;точный</span></span><span class="hv__line m-only"><span>подбор очков</span></span></h1>
+  <p class="hv__lead">Подбор очков у&nbsp;врача-офтальмолога и&nbsp;оптометристов —<br> от&nbsp;обычных случаев до&nbsp;самых сложных.</p>
+  <a class="kbtn kbtn--wide hv__book m-only" href="#book" data-book><span>Записаться на&nbsp;подбор</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+
+  <button class="hv__card" type="button" data-video="video/diagnostics.mp4" data-video-m="video/diagnostics-m.mp4" data-ar="1.7778" aria-label="Смотреть видео: Минута в&nbsp;центре доктора Кольцова">
+    <!-- на ПК — живая петля; на телефоне только кадр-обложка (ролик не качаем) -->
+    <span class="hv__card-m"><video id="hvCardV" data-src="video/card.mp4" poster="video/card.jpg" muted loop playsinline autoplay preload="metadata"></video></span>
+    <span class="hv__card-k" data-scramble>Смотреть · 1:00</span>
+    <span class="hv__card-t">Минута в&nbsp;центре доктора Кольцова</span>
+    <span class="hv__card-play"><svg viewBox="0 0 48 48"><path d="M28 23.5 21.25 27.4v-7.8z" fill="currentColor"/></svg></span>
+  </button>
+  </div>
+
+  <div class="hv__say" id="hvSay">
+    <p class="hv__say-k">Центр доктора Кольцова</p>
+    <p class="hv__say-t" id="hvSayT">Сюда приходят и&nbsp;просто за&nbsp;новыми очками, и&nbsp;после подборов, которые не&nbsp;получились в&nbsp;других местах. Мы&nbsp;начинаем с&nbsp;диагностики&nbsp;— и&nbsp;не&nbsp;отпускаем, пока вам не&nbsp;станет комфортно.</p>
+  </div>
+ </div>
+</section>
+<!-- ролик первого экрана — сразу, не дожидаясь app.js: на телефоне вертикальный, на ПК — прежний; петля в карточке — только на ПК -->
+<script>(function () {
+  var m = window.matchMedia('(max-width: 900px), (max-width: 1199px) and (orientation: portrait)').matches, v = document.getElementById('hvVideo'), c = document.getElementById('hvCardV');
+  v.poster = v.getAttribute(m ? 'data-poster-m' : 'data-poster');
+  v.src = v.getAttribute(m ? 'data-src-m' : 'data-src');
+  if (!m) c.src = c.getAttribute('data-src'); else c.removeAttribute('autoplay');
+})();</script>
+
+<!-- ═════════ 2. О ЦЕНТРЕ — ОЧКИ НАЧИНАЮТСЯ НЕ С ОПРАВЫ ═════════
+     по Figma (s8aXHdn1…, кадр 25:483, y 898…1933): полки в расфокусе, видео с моделью
+     (бесшовная петля), справа колонка стеклянных карточек. Растушёвка видео запечена в вуаль
+     (img/ab2/veil.webp), стекло — размытая копия блока (img/ab2/frost.webp).
+     Сцена закреплена: блок встаёт без карточек, дальше прокрутка по очереди выносит их снизу,
+     следующая наезжает на предыдущую, накрытая гаснет (app.js). Слева внизу — белый
+     кролик и «Следуйте за белым кроликом», как в первой версии первого экрана. Стили — about.css -->
+<section class="ab" id="about">
+ <div class="ab__stage">
+  <div class="ab__frame">
+   <p class="ab__label"><i></i>О&nbsp;центре</p>
+   <h2 class="ab__h"><span class="ab__line"><span>Очки начинаются</span></span><span class="ab__line"><span>не&nbsp;с&nbsp;оправы</span></span></h2>
+   <div class="ab__lead">
+    <p>В&nbsp;клинике сильная медицина, но&nbsp;очки подбирают «как получится». В&nbsp;салоне красивые оправы, но&nbsp;слабый подбор. У&nbsp;нас одно продолжает другое.</p>
+    <p>Врач и&nbsp;оптика под одной крышей: обследование, рецепт и&nbsp;очки делает одна команда, которая отвечает за&nbsp;результат. Вы&nbsp;уходите с&nbsp;очками, в&nbsp;которых комфортно весь день.</p>
+   </div>
+
+   <!-- слева внизу: белый кролик из первой версии первого экрана (символ #rabbit) и «Следуйте за белым кроликом»;
+        раз в 3,2 с мягко подпрыгивает — подсказка листать дальше -->
+   <div class="ab__follow" aria-hidden="true">
+    <svg class="ab__rb"><use href="#rabbit"/></svg>
+    <span>Следуйте<br> за&nbsp;белым кроликом</span>
+    <i class="ab__arr"><svg viewBox="0 0 12 7"><path d="M1 1l5 5 5-5"/></svg><svg viewBox="0 0 12 7"><path d="M1 1l5 5 5-5"/></svg><svg viewBox="0 0 12 7"><path d="M1 1l5 5 5-5"/></svg></i>
+   </div>
+
+   <!-- .ab__run / .ab__pin на ПК не рисуются (display:contents); на телефоне и планшете — закреплённая сцена с моделью, плашки наплывают по прокрутке (mobile.css, app.js) -->
+   <div class="ab__run" id="abRun"><div class="ab__pin" id="abPin">
+   <div class="ab__scene" aria-hidden="true">
+    <img class="ab__bg" src="img/ab2/bg.webp" alt="" decoding="async">
+    <video class="ab__video" id="abVideo" data-src="video/model.mp4?v=3" data-poster="video/model.jpg?v=3" data-src-m="video/model-m2.mp4" data-poster-m="video/model-m2.jpg" data-src-t="video/model-t.mp4" data-poster-t="video/model-t.jpg" data-preload-m="none" muted loop playsinline preload="metadata"></video>
+    <img class="ab__veil" src="img/ab2/veil.webp" alt="" decoding="async">
+   </div>
+
+   <!-- карточки по Figma 27:740: 597×517, стекло 40 %, метка с точкой, заголовок 22, текст 450.
+        Обёртка .ab__cards на ПК не рисуется (display:contents), на телефоне — колода в закреплённой сцене (макет 93:464, 93:613, 93:624) -->
+   <div class="ab__cards" id="abCards">
+   <article class="ab__card">
+    <div class="ab__glass"></div>
+    <div class="ab__body">
+      <span class="ab__n"><i></i>01 / 03</span>
+      <h3 class="ab__t">Глубокая диагностика зрения</h3>
+      <p class="ab__p" style="--w:450">Проверяем, как глаза работают вместе: бинокулярное зрение, мышечный баланс, аккомодацию. Дискомфорт в&nbsp;очках часто прячется именно здесь, а&nbsp;не&nbsp;в&nbsp;диоптриях.</p>
+    </div>
+    <div class="ab__media"><i class="ab__rim"></i><img class="ab__img" style="--ix:32;--iy:27;--iw:551;--ih:369" src="img/ab2/card-2.webp" alt="Щелевая лампа в&nbsp;кабинете диагностики" decoding="async"></div>
+   </article>
+   <article class="ab__card">
+    <div class="ab__glass"></div>
+    <div class="ab__body">
+      <span class="ab__n"><i></i>02 / 03</span>
+      <h3 class="ab__t">Точность до&nbsp;миллиметра</h3>
+      <p class="ab__p" style="--w:450">Учитываем посадку, расстояние от&nbsp;линзы до&nbsp;глаза, угол наклона и&nbsp;положение центров линз. От&nbsp;этого зависит, будет&nbsp;ли&nbsp;рецепт работать так, как задумано.</p>
+    </div>
+    <div class="ab__media"><i class="ab__rim"></i><img class="ab__img" style="--ix:67;--iy:32;--iw:441;--ih:355" src="img/ab2/card-1.webp" alt="Фороптер&nbsp;— прибор для подбора линз" decoding="async"></div>
+   </article>
+   <article class="ab__card">
+    <div class="ab__glass"></div>
+    <div class="ab__body">
+      <span class="ab__n"><i></i>03 / 03</span>
+      <h3 class="ab__t">Эстетика в&nbsp;деталях</h3>
+      <p class="ab__p" style="--w:450">Оправы без логомании&nbsp;— за&nbsp;материалы и&nbsp;посадку. Светлый зал под сводами, кофе и&nbsp;консультант, который не&nbsp;торопит.</p>
+    </div>
+    <div class="ab__media"><i class="ab__rim"></i><img class="ab__img" style="--ix:47;--iy:29;--iw:503;--ih:256" src="img/ab2/card-3.webp" alt="Очки на&nbsp;подставке" decoding="async"></div>
+   </article>
+   </div>
+   </div></div>
+  </div>
+ </div>
+</section>
+
+<!-- ═════════ 3. С ЧЕМ ПРИХОДЯТ — ТАБЛИЦА СИВЦЕВА ═════════
+     по Figma (s8aXHdn1…, кадр 16:341, y 2103…2906): строки уменьшаются, как в таблице для проверки зрения;
+     наведение выбирает случай. Подробности — на фото, на стеклянной подложке
+     (размытая копия кадра запечена: img/cx/NN-blur.webp). Стили — cases.css, строки — SITE.cases (админка) -->
+<section class="cx" id="cases">
+  <div class="cx__wrap">
+    <div class="cx__left">
+      <p class="cx__label"><i></i>С&nbsp;чем к&nbsp;нам обращаются</p>
+      <h2 class="cx__h"><span class="cx__line"><span>Узнаёте себя?</span></span></h2>
+      <ol class="cx__chart" id="cxChart"></ol>
+    </div>
+    <div class="cx__photo" id="cxPhoto">
+      <div class="cx__glass" id="cxGlass">
+        <div class="cx__meta"><span id="cxN">01 / 10</span><span id="cxV"></span></div>
+        <h3 class="cx__gh" id="cxH"></h3>
+        <div class="cx__cols">
+          <div><span class="cx__k">Как это бывает</span><p id="cxHow"></p></div>
+          <div><span class="cx__k">Что мы&nbsp;делаем</span><p id="cxDo"></p></div>
+        </div>
+        <a class="cx__btn" href="#book" data-book id="cxBtn"><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 4. КАК ПРОХОДИТ ПОДБОР ═════════
+     по Figma (s8aXHdn1criMd1QkL4O412, «Путь гостя»): белый лист со скруглённым верхом наезжает на «С чем приходят».
+     Сцена закреплена, шаги едут по горизонтали вместе с прокруткой (app.js). Карточки 609×509, фото и видео чередуются:
+     01 фото · 02 монтаж · 03 фото · 04 монтаж · 05 фото · 06 монтаж (_tools/journey-video.sh, фото — _tools/images.cjs jr-*).
+     Поверх кадра: номер, название, прогресс, внизу описание; справа — шкала с делениями -->
+<section class="sx jr" id="journey">
+  <div class="jr__run" id="jrRun">
+    <div class="jr__pin">
+      <div class="jr__head">
+        <div>
+          <p class="sx__label rv"><i></i>Как проходит подбор</p>
+          <h2 class="sx__h rv"><span class="sx__line"><span>Ваше зрение&nbsp;— наш&nbsp;приоритет</span></span></h2>
+        </div>
+        <div class="jr__scale rv" aria-hidden="true">
+          <div class="jr__ticks" id="jrTicks"></div>
+          <div class="jr__nums" id="jrNums"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span></div>
+        </div>
+      </div>
+      <div class="jr__track" id="jrTrack">
+        <article class="jr__step"><div class="jr__m"><img src="img/jr-1.webp" alt="Оптометрист Ольга и&nbsp;гость за&nbsp;столиком в&nbsp;салоне" loading="lazy" decoding="async"></div>
+          <div class="jr__c"><div class="jr__top"><p class="jr__no">01<span>/06</span></p><div class="jr__name"><h3>Знакомство</h3><p>Разговор о&nbsp;ваших задачах</p></div><i class="jr__dots" aria-hidden="true"><b class="on"></b><b></b><b></b><b></b><b></b><b></b></i></div>
+            <p class="jr__d">Расскажите, где и&nbsp;как вам неудобно, какие очки были раньше и&nbsp;чем вы&nbsp;заняты днём. Возьмите с&nbsp;собой старые очки и&nbsp;рецепты.</p></div></article>
+        <article class="jr__step"><div class="jr__m"><video data-src="video/j-diag.mp4" data-poster="video/j-diag.jpg" data-src-m="video/j-diag-m.mp4" data-poster-m="video/j-diag-m.jpg" muted loop playsinline preload="none" data-autoplay></video></div>
+          <div class="jr__c"><div class="jr__top"><p class="jr__no">02<span>/06</span></p><div class="jr__name"><h3>Диагностика</h3><p>Полное обследование зрения</p></div><i class="jr__dots" aria-hidden="true"><b class="on"></b><b class="on"></b><b></b><b></b><b></b><b></b></i></div>
+            <p class="jr__d">Рефракция, острота зрения, бинокулярные функции и&nbsp;мышечный баланс глаз&nbsp;— не&nbsp;только «какую строчку видите».</p></div></article>
+        <article class="jr__step"><div class="jr__m"><img src="img/jr-3.webp" alt="Оптометрист надевает пациенту пробную оправу" loading="lazy" decoding="async"></div>
+          <div class="jr__c"><div class="jr__top"><p class="jr__no">03<span>/06</span></p><div class="jr__name"><h3>Подбор коррекции</h3><p>В&nbsp;пробной оправе</p></div><i class="jr__dots" aria-hidden="true"><b class="on"></b><b class="on"></b><b class="on"></b><b></b><b></b><b></b></i></div>
+            <p class="jr__d">Проверяем рецепт в&nbsp;пробной оправе: вдаль, вблизи, на&nbsp;ходу. Объясняем, что увидели и&nbsp;почему рецепт именно такой.</p></div></article>
+        <article class="jr__step"><div class="jr__m"><video data-src="video/j-frame.mp4" data-poster="video/j-frame.jpg" data-src-m="video/j-frame-m.mp4" data-poster-m="video/j-frame-m.jpg" muted loop playsinline preload="none" data-autoplay></video></div>
+          <div class="jr__c"><div class="jr__top"><p class="jr__no">04<span>/06</span></p><div class="jr__name"><h3>Оправа под&nbsp;рецепт</h3><p>Оправа и&nbsp;линзы</p></div><i class="jr__dots" aria-hidden="true"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b><b></b></i></div>
+            <p class="jr__d">Подбираем оправу под лицо, образ жизни и&nbsp;вашу коррекцию, а&nbsp;линзы&nbsp;— под задачи: офис, руль, чтение.</p></div></article>
+        <article class="jr__step"><div class="jr__m"><img src="img/jr-5.webp" alt="Готовые очки в&nbsp;руках" loading="lazy" decoding="async"></div>
+          <div class="jr__c"><div class="jr__top"><p class="jr__no">05<span>/06</span></p><div class="jr__name"><h3>Изготовление</h3><p>Сборка и&nbsp;проверка</p></div><i class="jr__dots" aria-hidden="true"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b></b></i></div>
+            <p class="jr__d">Собираем очки, проверяем их&nbsp;на&nbsp;соответствие рецепту и&nbsp;подгоняем посадку под&nbsp;вас.</p></div></article>
+        <article class="jr__step"><div class="jr__m"><video data-src="video/j-after.mp4" data-poster="video/j-after.jpg" data-src-m="video/j-after-m.mp4" data-poster-m="video/j-after-m.jpg" muted loop playsinline preload="none" data-autoplay></video></div>
+          <div class="jr__c"><div class="jr__top"><p class="jr__no">06<span>/06</span></p><div class="jr__name"><h3>Сопровождение</h3><p>Контроль через 14&nbsp;дней</p></div><i class="jr__dots" aria-hidden="true"><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b><b class="on"></b></i></div>
+            <p class="jr__d">Через 14&nbsp;дней звоним сами. Если к&nbsp;очкам сложно привыкнуть&nbsp;— приглашаем на&nbsp;контроль и&nbsp;ищем решение.</p></div></article>
+        <div class="jr__end">
+          <p class="jr__end-h">Готовы<br> начать?</p>
+          <a class="kbtn" href="#book" data-book><span>Записаться на&nbsp;диагностику</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 5. ГЛАВНЫЙ ВРАЧ — КОМПЕТЕНЦИИ ═════════
+     по Figma (s8aXHdn1criMd1QkL4O412, блок 1920×940 под «Путём гостя»): кадр — экспорт макета (витрина + доктор) с расфокусом краёв
+     и засветлением слева как раньше (_tools/doctor-figma-img.cjs). Слева — подпись, имя, подводка и три факта (цифры синим),
+     справа — стекло «Компетенции» 597 шириной, кнопка записи во всю ширину снизу.
+     Стекло — запечённая размытая копия кадра (img/dk/frost.webp) в координатах листа. Прежний вид — _versions/before-figma-doctor/ -->
+<section class="sx dk" id="doctor">
+  <div class="dk__scene" aria-hidden="true"><picture><source media="(max-width: 599px)" srcset="img/dk/plate-m.webp"><source media="(max-width: 900px), (max-width: 1199px) and (orientation: portrait)" srcset="img/dk/photo-t.webp"><img class="dk__img" src="img/dk/photo.webp" alt="" loading="lazy" decoding="async"></picture></div>
+  <div class="dk__l">
+    <p class="sx__label dk__label rv"><i></i>Врач-офтальмолог · основатель центра</p>
+    <h2 class="dk__name rv"><span class="sx__line"><span>Александр</span></span><span class="sx__line"><span>Кольцов</span></span></h2>
+    <p class="dk__lead rv" style="--d:.16s">Берётся за&nbsp;случаи, в&nbsp;которых другим не&nbsp;удалось помочь,&nbsp;— и&nbsp;учит этому других врачей.</p>
+    <ul class="dk__creds">
+      <li class="rv" style="--d:.1s;--t:537"><b>22</b><small>года</small><span>в&nbsp;офтальмологии. Военно-медицинская академия, 2004</span></li>
+      <li class="rv" style="--d:.18s;--t:647"><b>16</b><small>лет</small><span style="--w:201">медицинский консультант в&nbsp;оптике и&nbsp;оптометрии</span></li>
+      <li class="rv" style="--d:.26s;--t:762;--w:300"><a href="https://kmkschool.ru" target="_blank" rel="noopener"><b>КМК</b><span>ведёт очные интенсивы для&nbsp;офтальмологов и&nbsp;оптометристов<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></span></a></li>
+    </ul>
+  </div>
+  <aside class="dk__panel" data-in>
+    <div class="dk__frost" aria-hidden="true"><img src="img/dk/frost.webp" alt="" loading="lazy" decoding="async"></div>
+    <p class="dk__ph"><span><i></i>Компетенции</span><span>Сложные случаи</span></p>
+    <ol class="dk__comp">
+      <li style="--i:0"><em>01</em><div><h3>Двоение в&nbsp;глазах</h3><p>Находит причину и&nbsp;подбирает коррекцию, в&nbsp;том числе призматическую</p></div></li>
+      <li style="--i:1"><em>02</em><div><h3>Косоглазие&nbsp;— явное и&nbsp;скрытое</h3><p>У&nbsp;взрослых и&nbsp;детей: осмотр, коррекция очками, рекомендации по&nbsp;лечению</p></div></li>
+      <li style="--i:2"><em>03</em><div><h3>Призматическая коррекция</h3><p>Призмы в&nbsp;очках, когда глазам трудно работать вместе</p></div></li>
+      <li style="--i:3"><em>04</em><div><h3>Бинокулярные нарушения</h3><p>Усталость, головная боль и&nbsp;«плывущий» текст при&nbsp;хорошем зрении</p></div></li>
+      <li style="--i:4"><em>05</em><div><h3>Неудачный опыт с&nbsp;очками</h3><p>Разбирает, почему не&nbsp;получилось привыкнуть, и&nbsp;меняет решение</p></div></li>
+    </ol>
+    <a class="dk__btn" href="#book" data-book data-who="koltsov"><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+  </aside>
+</section>
+
+<!-- ═════════ 8. ОТЗЫВЫ ═════════
+     редизайн 2026-10-17 (прежнее — _versions/before-redesign-4b): один ряд — синяя плашка рейтинга Яндекс Карт и видеоотзывы
+     одного размера (9:16). При наведении ролик играет без звука, по клику — плеер со звуком. Плашка открывает окно
+     со всеми отзывами (reviews-data.js — собирает админка) -->
+<section class="sx rw" id="reviews">
+  <div class="sx__in">
+    <p class="sx__label rv"><i></i>Отзывы</p>
+    <h2 class="sx__h rv"><span class="sx__line"><span>Нас советуют своим</span></span></h2>
+    <div class="rw__row">
+      <button class="rw__rate rv" type="button" data-rwp aria-label="Рейтинг 5,0 — читать отзывы">
+        <svg class="rw__go" viewBox="0 0 540 300" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="130" cy="150" r="118"/><circle cx="410" cy="150" r="118"/><path d="M248 150c12-21 32-21 44 0"/></g></svg>
+        <span class="rw__top"><span>Яндекс Карты</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></span>
+        <span class="rw__bot">
+          <span class="rw__n">5,0</span>
+          <span class="rw__stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></span>
+          <span class="rw__sub">208 оценок · 128 отзывов</span>
+          <span class="rw__more">Читать отзывы</span>
+        </span>
+      </button>
+      <button class="rvf rv-shot" type="button" data-video="video/review-1.mp4" data-ar=".5625" aria-label="Смотреть видеоотзыв врача-офтальмолога">
+        <span class="rvf__m"><img src="video/review-1.jpg" alt="" loading="lazy" decoding="async"><video data-src="video/review-1.mp4" muted loop playsinline preload="none"></video></span>
+        <span class="rvf__tag">Отзыв коллеги-врача</span>
+        <span class="rvf__play"><svg viewBox="0 0 48 48"><path d="M28 23.5 21.25 27.4v-7.8z" fill="currentColor"/></svg></span>
+        <span class="rvf__cap"><b>Врач-офтальмолог</b><span>0:39</span></span>
+      </button>
+      <button class="rvf rv-shot" type="button" data-video="video/review-2.mp4" data-ar=".5625" style="--d:.06s" aria-label="Смотреть видеоотзыв гостя центра">
+        <span class="rvf__m"><img src="video/review-2.jpg" alt="" loading="lazy" decoding="async"><video data-src="video/review-2.mp4" muted loop playsinline preload="none"></video></span>
+        <span class="rvf__play"><svg viewBox="0 0 48 48"><path d="M28 23.5 21.25 27.4v-7.8z" fill="currentColor"/></svg></span>
+        <span class="rvf__cap"><b>Гость центра</b><span>0:27</span></span>
+      </button>
+      <button class="rvf rv-shot" type="button" data-video="video/review-3.mp4" data-ar=".5625" style="--d:.12s" aria-label="Смотреть видеоотзыв гостьи центра">
+        <span class="rvf__m"><img src="video/review-3.jpg" alt="" loading="lazy" decoding="async"><video data-src="video/review-3.mp4" muted loop playsinline preload="none"></video></span>
+        <span class="rvf__play"><svg viewBox="0 0 48 48"><path d="M28 23.5 21.25 27.4v-7.8z" fill="currentColor"/></svg></span>
+        <span class="rvf__cap"><b>Гостья центра</b><span>0:34</span></span>
+      </button>
+      <button class="rvf rv-shot" type="button" data-video="video/review-4.mp4" data-ar=".5625" style="--d:.18s" aria-label="Смотреть видеоотзыв гостьи центра">
+        <span class="rvf__m"><img src="video/review-4.jpg" alt="" loading="lazy" decoding="async"><video data-src="video/review-4.mp4" muted loop playsinline preload="none"></video></span>
+        <span class="rvf__play"><svg viewBox="0 0 48 48"><path d="M28 23.5 21.25 27.4v-7.8z" fill="currentColor"/></svg></span>
+        <span class="rvf__cap"><b>Гостья центра</b><span>1:40</span></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 10. ВОПРОСЫ ═════════
+     редизайн 2026-10-17 (прежнее — _versions/before-redesign-4b): молочный лист со скруглённым верхом наезжает на «Жизнь центра».
+     Слева (держится на месте, пока листается список) — заголовок, подводка и кнопка; справа — вопросы белыми карточками,
+     открыт один ответ за раз -->
+<section class="sx fq" id="faq">
+  <div class="sx__in fq__grid">
+    <div class="fq__head">
+      <p class="sx__label rv"><i></i>Вопросы</p>
+      <h2 class="sx__h rv"><span class="sx__line"><span>Коротко</span></span><span class="sx__line"><span>о&nbsp;главном</span></span></h2>
+      <p class="sx__lead fq__lead rv">Не&nbsp;нашли ответ&nbsp;— напишите, подскажем.</p>
+      <a class="kbtn rv" href="#" data-msg="tg"><span>Написать в&nbsp;Telegram</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+    </div>
+    <div class="fq__list" id="faqList">
+      <div class="fq__item rv"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">01</span><span class="fq__t">Можно прийти просто за&nbsp;новыми очками?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Да. Большинство гостей приходят именно с&nbsp;этим: обновить рецепт, подобрать очки для&nbsp;чтения или работы. Сложные случаи&nbsp;— наша специализация, но&nbsp;не&nbsp;условие.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.05s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">02</span><span class="fq__t">К&nbsp;кому записаться&nbsp;— к&nbsp;врачу или оптометристу?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Большинству подойдёт оптометрист. Сложные случаи&nbsp;— двоение, косоглазие, призмы, неудачный опыт с&nbsp;очками&nbsp;— к&nbsp;главному врачу. Сомневаетесь&nbsp;— напишите, подскажем.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.10s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">03</span><span class="fq__t">Можно прийти без записи?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Лучше записаться: на&nbsp;каждого гостя мы&nbsp;закладываем 1–1,5&nbsp;часа, и&nbsp;в&nbsp;этот день вас никто не&nbsp;будет торопить. Если вы&nbsp;уже рядом&nbsp;— позвоните, проверим, есть&nbsp;ли&nbsp;свободное окно.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.15s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">04</span><span class="fq__t">Сколько длится приём и&nbsp;что взять с&nbsp;собой?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Закладываем около 1–1,5&nbsp;часа, чтобы никуда не&nbsp;спешить. Возьмите очки, которые носите сейчас, старые рецепты и&nbsp;выписки, если есть.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.20s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">05</span><span class="fq__t">Можно со&nbsp;своим рецептом или в&nbsp;свою оправу?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Можно. Рецепт перед изготовлением мы&nbsp;перепроверим, а&nbsp;оправу оценим по&nbsp;посадке: если она подходит под коррекцию, поставим в&nbsp;неё новые линзы.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.25s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">06</span><span class="fq__t">Подберёте очки для компьютера и&nbsp;для&nbsp;вождения?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Да. Офисные линзы&nbsp;— монитор, документы и&nbsp;собеседник в&nbsp;одних очках; очки для&nbsp;водителей&nbsp;— чёткая дорога и&nbsp;приборная панель. Подбираем под ваше рабочее расстояние и&nbsp;привычки.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.30s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">07</span><span class="fq__t">Сколько ждать готовые очки?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Зависит от&nbsp;линз: простые делаем быстрее, сложные&nbsp;— прогрессивные, с&nbsp;призмами&nbsp;— изготавливаются под заказ. Точный срок назовём на&nbsp;приёме, когда будет понятен рецепт.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.30s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">08</span><span class="fq__t">Что если я&nbsp;не&nbsp;смогу привыкнуть к&nbsp;очкам?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Через 14&nbsp;дней мы&nbsp;звоним сами. Если есть дискомфорт&nbsp;— приглашаем на&nbsp;контроль, разбираем причину и&nbsp;меняем решение.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.30s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">09</span><span class="fq__t">Вы&nbsp;работаете с&nbsp;детьми?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Да: подбираем первые очки и&nbsp;помогаем контролировать близорукость. Детей ведёт главный врач.</p></div></div></div>
+      <div class="fq__item rv" style="--d:0.30s"><button class="fq__q" type="button" aria-expanded="false"><span class="fq__n">10</span><span class="fq__t">Я&nbsp;из&nbsp;другого города&nbsp;— как спланировать визит?</span><span class="fq__pm" aria-hidden="true"></span></button>
+        <div class="fq__a"><div><p>Диагностику и&nbsp;подбор проводим за&nbsp;один визит. Напишите заранее&nbsp;— подберём время и&nbsp;расскажем про сроки изготовления и&nbsp;доставку.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 7. СПЕЦИАЛИСТЫ И ЦЕНЫ ═════════ -->
+<section class="sx tm" id="prices">
+  <div class="sx__in">
+    <div class="sx__head">
+      <div>
+        <p class="sx__label rv"><i></i>Специалисты и&nbsp;цены</p>
+        <h2 class="sx__h rv"><span class="sx__line"><span>К&nbsp;кому записаться</span></span></h2>
+      </div>
+    </div>
+    <div class="tm__grid">
+      <article class="tm__card" data-sp="koltsov">
+        <button class="tm__m rv-shot" type="button" data-sp-open aria-label="Подробнее о специалисте"><picture><source media="(max-width: 900px), (max-width: 1199px) and (orientation: portrait)" srcset="img/s/sp-koltsov.webp"><img src="img/s/card-koltsov.webp" alt="Александр Кольцов" loading="lazy" decoding="async"></picture><span class="tm__more" aria-hidden="true"><span>Подробнее</span><i></i></span></button>
+        <div class="tm__info rv"><h3 class="tm__name">Александр Кольцов</h3><b class="tm__price">5&nbsp;400&nbsp;₽</b><p class="tm__role">Главный врач · офтальмолог</p><p class="tm__svc">Приём врача-офтальмолога</p></div>
+        <a class="kbtn kbtn--wide rv" href="#book" data-book data-who="koltsov"><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+        <button class="tm__det m-only" type="button" data-sp-open>Подробнее о&nbsp;враче</button>
+      </article>
+      <article class="tm__card" data-sp="opt1" style="--d:.08s">
+        <button class="tm__m rv-shot" type="button" data-sp-open aria-label="Подробнее о специалисте"><picture><source media="(max-width: 900px), (max-width: 1199px) and (orientation: portrait)" srcset="img/s/sp-opt1.webp"><img src="img/s/card-opt1.webp" alt="Имя Фамилия" loading="lazy" decoding="async"></picture><span class="tm__more" aria-hidden="true"><span>Подробнее</span><i></i></span></button>
+        <div class="tm__info rv"><h3 class="tm__name">Имя Фамилия</h3><b class="tm__price">2&nbsp;000&nbsp;₽</b><p class="tm__role">Оптометрист</p><p class="tm__svc">Диагностика и&nbsp;подбор очков</p></div>
+        <a class="kbtn kbtn--wide rv" href="#book" data-book data-who="opt1"><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+        <button class="tm__det m-only" type="button" data-sp-open>Подробнее о&nbsp;специалисте</button>
+      </article>
+      <article class="tm__card" data-sp="opt2" style="--d:.16s">
+        <button class="tm__m rv-shot" type="button" data-sp-open aria-label="Подробнее о специалисте"><picture><source media="(max-width: 900px), (max-width: 1199px) and (orientation: portrait)" srcset="img/s/sp-opt2.webp"><img src="img/s/card-opt2.webp" alt="Имя Фамилия" loading="lazy" decoding="async"></picture><span class="tm__more" aria-hidden="true"><span>Подробнее</span><i></i></span></button>
+        <div class="tm__info rv"><h3 class="tm__name">Имя Фамилия</h3><b class="tm__price">2&nbsp;000&nbsp;₽</b><p class="tm__role">Оптометрист</p><p class="tm__svc">Диагностика и&nbsp;подбор очков</p></div>
+        <a class="kbtn kbtn--wide rv" href="#book" data-book data-who="opt2"><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+        <button class="tm__det m-only" type="button" data-sp-open>Подробнее о&nbsp;специалисте</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ 9. ЖИЗНЬ ЦЕНТРА ═════════
+     карточки и переключатель — app.js из SITE.news; без свежих публикаций блок скрывается сам -->
+<section class="sx lf" id="life" hidden>
+  <div class="sx__in">
+    <div class="sx__head">
+      <div>
+        <p class="sx__label rv"><i></i>Жизнь центра</p>
+        <h2 class="sx__h rv"><span class="sx__line"><span>События, новые оправы</span></span><span class="sx__line"><span>и&nbsp;новости доктора</span></span></h2>
+      </div>
+    </div>
+    <div class="lf__grid" id="lifeGrid"></div>
+  </div>
+</section>
+
+<!-- ═════════ 11. ЗАПИСЬ И КОНТАКТЫ ═════════
+     редизайн 2026-10-17 (прежнее — _versions/before-redesign-4b): камень со скруглённым верхом (наезжает на «Вопросы») и низом (на подвал).
+     Карта во всю ширину — живая (Leaflet + тайлы Яндекса в сером, тянется мышью, масштаб кнопками; колесо листает страницу), пока грузится — статичный снимок
+     (_tools/map-wide.cjs). На метке — миниатюра входа, по клику фото входа крупно (#ent, _tools/entrance-img.cjs). Поверх слева — стеклянная карточка, только главное:
+     адрес и метро, телефон и часы, запись и мессенджеры; в шапке — «открыто / закрыто» по времени Москвы (app.js) -->
+<section class="sx sx--stone ct" id="contacts">
+  <div class="sx__in">
+    <p class="sx__label rv"><i></i>Запись и&nbsp;контакты</p>
+    <h2 class="sx__h rv"><span class="sx__line"><span>Запишитесь на&nbsp;подбор</span></span></h2>
+    <div class="ct__stage rv-shot">
+      <div class="ct__map" id="ctMap" data-lat="59.926878" data-lon="30.313586" aria-label="Карта: Казначейская ул.,&nbsp;4/16">
+        <!-- на телефоне — свой чёткий снимок (тайлы Яндекса 2x, _tools/map-mobile.cjs): живая карта в ленте перехватывала бы свайп -->
+        <picture><source media="(max-width: 900px), (max-width: 1199px) and (orientation: portrait)" srcset="img/ct-map-m.webp"><img class="ct__still" src="img/ct-map.webp" alt="" loading="lazy" decoding="async"></picture>
+        <div class="ct__lf" id="ctLf"></div>
+        <a class="ct__open m-only" href="https://yandex.ru/maps/org/tsentr_korrektsii_zreniya_doktora_koltsova/204181103196/" target="_blank" rel="noopener" aria-label="Открыть в Яндекс Картах"></a>
+      </div>
+      <template id="ctPin"><span class="ct__ypin"><svg viewBox="0 0 26 40" aria-hidden="true"><path fill="#fff" d="M11.3083 25.9017C4.92716 25.0722 0 19.6138 0 13.0054C0 5.82366 5.81937 0 13 0C20.1806 0 26 5.82366 26 13.0054C26 14.7335 25.662 16.3876 25.0468 17.9014C23.6987 21.4768 20.8429 26.3559 18.2575 30.4453C15.6392 34.5867 13.1829 38.0963 12.5474 38.9697C12.048 39.6559 11.2783 39.9965 10.5201 39.9965C8.83647 39.9965 7.62976 38.3765 8.10664 36.765L11.3083 25.9017Z"/><path fill="currentColor" d="M13.8749 24.2678C13.9135 24.1384 13.8095 24.0097 13.6746 24.0129C13.4514 24.0181 13.2265 24.0109 13 24.0109C6.92487 24.0109 2 19.0836 2 13.0054C2 6.9273 6.92487 2 13 2C19.0751 2 24 6.9273 24 13.0054C24 14.4798 23.7102 15.8865 23.1845 17.1716C20.6578 23.8985 12.1494 36.1173 10.9302 37.793C10.8334 37.9259 10.6845 37.9965 10.5201 37.9965C10.1744 37.9965 9.92608 37.6634 10.0246 37.3318L13.8749 24.2678Z"/><circle fill="#fff" cx="13" cy="13" r="8"/></svg><button class="ct__tag" type="button" data-ent aria-label="Посмотреть фото входа"><span class="ct__th"><img src="img/ct/entrance-th.webp" alt=""><i></i></span><span class="ct__tt"><b>Центр коррекции зрения<br>доктора Кольцова</b><em>Фото входа</em></span></button></span></template>
+      <a class="ct__hint" href="https://yandex.ru/maps/org/tsentr_korrektsii_zreniya_doktora_koltsova/204181103196/" target="_blank" rel="noopener">Открыть в&nbsp;Яндекс Картах<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></a>
+      <div class="ct__zoom"><button type="button" data-zoom="1" aria-label="Приблизить"><i></i><i></i></button><button type="button" data-zoom="-1" aria-label="Отдалить"><i></i></button></div>
+      <span class="ct__osm" id="ctCopy">© OpenStreetMap</span>
+
+      <aside class="ct__card">
+        <p class="ct__ph"><span><i></i>Как нас найти</span><span class="ct__now" id="ctNow"><i></i><span>Пн–Сб с 11:00</span></span></p>
+        <div class="ct__row">
+          <p class="ct__addr">Казначейская ул.,&nbsp;4/16</p>
+          <p class="ct__metro"><span><i style="--c:#0078C9"></i>Сенная площадь — 230&nbsp;м</span><span><i style="--c:#702785"></i>Садовая — 320&nbsp;м</span></p>
+          <a class="ct__route" href="https://yandex.ru/maps/org/tsentr_korrektsii_zreniya_doktora_koltsova/204181103196/" target="_blank" rel="noopener">Маршрут в&nbsp;Яндекс Картах<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></a>
+        </div>
+        <div class="ct__row">
+          <a class="ct__tel" href="tel:+79500241177">+7 950 024 11 77</a>
+          <p class="ct__hours">Пн–Пт 11:00–20:00 · Сб 11:00–19:00</p>
+        </div>
+        <div class="ct__go">
+          <a class="kbtn" href="#book" data-book><span>Записаться онлайн</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+          <a class="ct__ico" href="#" data-msg="tg" aria-label="Написать в Telegram"><svg><use href="#i-tg"/></svg></a>
+          <a class="ct__ico" href="#" data-msg="wa" aria-label="Написать в WhatsApp"><svg><use href="#i-wa"/></svg></a>
+          <a class="ct__ico" href="#" data-msg="max" aria-label="Написать в MAX"><svg><use href="#i-max"/></svg></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ ПОДВАЛ ═════════
+     по образцу millident.ru, в языке блоков из Figma (Involve + Manrope, --u = 1px кадра 1920).
+     Фон почти чёрный, по нему перетекают тусклые пятна (пятна кружат с взаимно простыми периодами), блок «Контакты»
+     скруглённым краем наезжает сверху, бегущая строка видна сразу под его краем. Стили — footer.css -->
+<footer class="fo" id="footer">
+  <div class="fo__bg" aria-hidden="true"><i class="fo__s fo__s--1"></i><i class="fo__s fo__s--2"></i><i class="fo__s fo__s--3"></i><i class="fo__s fo__s--4"></i><i class="fo__grain"></i></div>
+  <div class="fo__in" id="foIn">
+    <a class="fo__run" href="#book" data-book aria-label="Чёткое зрение без усталости — запишитесь на подбор">
+      <div class="fo__track" aria-hidden="true">
+        <span class="fo__item">Чёткое зрение без&nbsp;усталости&nbsp;— запишитесь на&nbsp;подбор —</span><span class="fo__item">Чёткое зрение без&nbsp;усталости&nbsp;— запишитесь на&nbsp;подбор —</span>
+      </div>
+    </a>
+    <a class="fo__up" href="#top" aria-label="Наверх"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14.5v-11M4.5 8 9 3.5 13.5 8"/></svg></a>
+
+    <div class="fo__grid">
+      <div class="fo__soc">
+        <p class="fo__k">Мы&nbsp;в&nbsp;соцсетях</p>
+        <div class="fo__icons">
+          <a href="#" aria-label="Telegram-канал"><svg><use href="#i-tg"/></svg></a>
+          <a href="#" aria-label="ВКонтакте"><svg><use href="#i-vk"/></svg></a>
+          <a href="#" aria-label="Instagram*"><svg><use href="#i-ig"/></svg></a>
+        </div>
+      </div>
+      <div class="fo__msg">
+        <p class="fo__k">Напишите нам</p>
+        <div class="fo__mid">
+          <a href="#" data-msg="tg">Telegram</a>
+          <a href="#" data-msg="wa">WhatsApp</a>
+          <a href="#" data-msg="max">MAX</a>
+        </div>
+      </div>
+      <div class="fo__ct">
+        <p class="fo__k">Пн–Пт 11:00–20:00 · Сб 11:00–19:00 · Вс — выходной</p>
+        <div class="fo__big">
+          <a href="tel:+79500241177">+7 950 024 11 77</a>
+          <a href="#book" data-book>Записаться онлайн</a>
+        </div>
+      </div>
+
+      <nav class="fo__nav fo__nav--cases" aria-label="С&nbsp;чем приходят">
+        <p class="fo__t">С&nbsp;чем приходят</p>
+        <a href="#cases">Двоится в&nbsp;глазах</a>
+        <a href="#cases">Косоглазие&nbsp;— явное или скрытое</a>
+        <a href="#cases">Астигматизм</a>
+        <a href="#cases">У&nbsp;ребёнка растёт минус</a>
+        <a href="#cases">Были у&nbsp;врачей&nbsp;— не&nbsp;помогло</a>
+      </nav>
+      <nav class="fo__nav fo__nav--site" aria-label="Навигация">
+        <p class="fo__t">Навигация</p>
+        <a href="#about">О&nbsp;центре</a>
+        <a href="#doctor">Главный врач</a>
+        <a href="#journey">Как проходит</a>
+        <a href="#reviews">Отзывы</a>
+        <a href="#prices">Цены</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <div class="fo__nav fo__nav--way">
+        <p class="fo__t">Как добраться</p>
+        <span class="fo__li">Санкт-Петербург, Казначейская ул.,&nbsp;4/16</span>
+        <span class="fo__li">м.&nbsp;Сенная площадь — 230&nbsp;м</span>
+        <span class="fo__li">м.&nbsp;Садовая — 320&nbsp;м</span>
+        <a class="fo__li" href="https://yandex.ru/maps/org/tsentr_korrektsii_zreniya_doktora_koltsova/204181103196/" target="_blank" rel="noopener">Маршрут в&nbsp;Яндекс Картах</a>
+      </div>
+
+    </div>
+
+    <!-- низ — полоса во всю ширину с линией сверху, по Figma 60:1382 -->
+    <div class="fo__bot">
+      <div class="fo__b1">
+        <a class="fo__sm" href="#" data-msg="">Политика конфиденциальности</a>
+        <p class="fo__warn">Имеются противопоказания. Необходима консультация специалиста</p>
+      </div>
+      <div class="fo__b2">
+        <a class="fo__sm" href="#" data-msg="">Согласие на&nbsp;обработку персональных данных</a>
+        <span class="fo__sm">*Instagram принадлежит Meta, признанной экстремистской в&nbsp;РФ</span>
+      </div>
+      <span class="fo__sm fo__copy">© 2026 Центр коррекции зрения<br> доктора Кольцова<br> ООО «Название» · ИНН 0000000000</span>
+    </div>
+  </div>
+</footer>
+
+</main>
+
+<!-- ═════════ ТЕЛЕФОН: МЕНЮ — лист на весь экран (бургер в шапке первого экрана и в шапке сайта):
+     разделы по порядку страницы, внизу — открыто ли сейчас, телефон, мессенджеры и запись ═════════ -->
+<div class="mm m-only" id="mm" aria-hidden="true">
+  <div class="mm__panel" role="dialog" aria-modal="true" aria-label="Меню">
+    <div class="mm__bar">
+      <a class="mm__logo" href="#top"><img src="img/logo.png" alt="Центр коррекции зрения доктора Кольцова"></a>
+      <button class="mm__x" type="button" data-close aria-label="Закрыть меню"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <nav class="mm__nav" aria-label="Разделы">
+      <a href="#about"><i>01</i><span>О&nbsp;центре</span></a>
+      <a href="#cases"><i>02</i><span>С&nbsp;чем приходят</span></a>
+      <a href="#journey"><i>03</i><span>Как проходит подбор</span></a>
+      <a href="#doctor"><i>04</i><span>Главный врач</span></a>
+      <a href="#reviews"><i>05</i><span>Отзывы</span></a>
+      <a href="#faq"><i>06</i><span>Вопросы</span></a>
+      <a href="#prices"><i>07</i><span>Специалисты и&nbsp;цены</span></a>
+      <a href="#life" data-life><i>08</i><span>Жизнь центра</span></a>
+      <a href="#contacts"><i>09</i><span>Контакты</span></a>
+    </nav>
+    <div class="mm__foot">
+      <p class="mm__now" id="mmNow"><i></i><span>Пн–Сб с 11:00</span></p>
+      <a class="mm__tel" href="tel:+79500241177">+7 950 024 11 77</a>
+      <p class="mm__addr">Казначейская ул.,&nbsp;4/16 · м.&nbsp;Сенная площадь</p>
+      <div class="mm__msg">
+        <a href="#" data-msg="tg"><svg><use href="#i-tg"/></svg>Telegram</a>
+        <a href="#" data-msg="wa"><svg><use href="#i-wa"/></svg>WhatsApp</a>
+        <a href="#" data-msg="max"><svg><use href="#i-max"/></svg>MAX</a>
+      </div>
+      <a class="kbtn kbtn--wide" href="#book" data-book><span>Записаться на&nbsp;подбор</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ ТЕЛЕФОН: ЗАПИСЬ ПОД БОЛЬШИМ ПАЛЬЦЕМ — плашка снизу, видна от «С чем приходят» до «Контактов» ═════════ -->
+<div class="mbar m-only" id="mbar">
+  <a class="kbtn mbar__book" href="#book" data-book><span>Записаться на&nbsp;подбор</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+  <a class="mbar__call" href="tel:+79500241177" aria-label="Позвонить: +7 950 024 11 77"><svg><use href="#i-phone"/></svg></a>
+</div>
+
+<!-- ═════════ ЗАПИСЬ — по шагам, не уходя со страницы ═════════
+     специалист → контакты → «заявка принята». Дату и время на сайте не выбирают — администратор перезванивает
+     и подбирает время. С карточки специалиста первый шаг пропускается (сменить можно в сводке).
+     Заявка уходит в send.php: сохраняется и приходит уведомлением (настройки — в админке, «Заявки»). -->
+<div class="sheet" id="book" aria-hidden="true">
+  <div class="sheet__bg" data-close></div>
+  <div class="sheet__panel bk" role="dialog" aria-modal="true" aria-labelledby="bkH">
+    <div class="bk__bar">
+      <button class="bk__back" type="button" data-bk-back aria-label="Назад"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 9H3M7.5 4.5 3 9l4.5 4.5"/></svg></button>
+      <ol class="bk__steps" aria-label="Шаги записи"><li data-s="who"><b>01</b>Специалист</li><li data-s="form"><b>02</b>Контакты</li></ol>
+      <button class="sheet__x" type="button" data-close aria-label="Закрыть"><svg><use href="#i-x"/></svg></button>
+    </div>
+
+    <!-- 1. специалист -->
+    <section class="bk__v" data-v="who">
+      <p class="sheet__label"><i></i>Онлайн-запись</p>
+      <h3 class="sheet__h" id="bkH">К&nbsp;кому записаться?</h3>
+      <div class="sheet__list">
+        <button class="who" type="button" data-pick="koltsov"><img data-src="img/s/sp-koltsov.webp" alt=""><span><b>Александр Кольцов</b>главный врач, офтальмолог · сложные случаи, призмы</span><em>5&nbsp;400&nbsp;₽</em></button>
+        <button class="who" type="button" data-pick="opt1"><img data-src="img/s/sp-opt1.webp" alt=""><span><b>Имя Фамилия</b>оптометрист · подбор очков и&nbsp;линз</span><em>2&nbsp;000&nbsp;₽</em></button>
+        <button class="who" type="button" data-pick="opt2"><img data-src="img/s/sp-opt2.webp" alt=""><span><b>Имя Фамилия</b>оптометрист · прогрессивные и&nbsp;офисные линзы</span><em>2&nbsp;000&nbsp;₽</em></button>
+      </div>
+      <p class="sheet__or">Не&nbsp;уверены, к&nbsp;кому? Напишите&nbsp;— подскажем</p>
+      <div class="sheet__msg">
+        <a href="#" data-msg="tg"><svg><use href="#i-tg"/></svg>Telegram</a>
+        <a href="#" data-msg="wa"><svg><use href="#i-wa"/></svg>WhatsApp</a>
+        <a href="#" data-msg="max"><svg><use href="#i-max"/></svg>MAX</a>
+        <a href="tel:+79500241177"><svg><use href="#i-phone"/></svg>Позвонить</a>
+      </div>
+    </section>
+
+    <!-- 2. контакты -->
+    <section class="bk__v" data-v="form" hidden>
+      <div class="bk__sum" data-bk-sum></div>
+      <h3 class="bk__h">Как с&nbsp;вами связаться</h3>
+      <form class="bk__form" id="bkForm" novalidate>
+        <label class="bk__f"><span>Имя</span><input name="name" type="text" autocomplete="given-name" placeholder="Как к&nbsp;вам обращаться" required></label>
+        <label class="bk__f"><span>Телефон</span><input name="tel" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__" required></label>
+        <label class="bk__f bk__f--area"><span>Что беспокоит <small>необязательно</small></span><textarea name="note" rows="3" placeholder="Например: двоится при чтении, старые очки не&nbsp;подошли"></textarea></label>
+        <input class="bk__hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="bk__ok"><input name="ok" type="checkbox" required><i></i><span>Согласен на&nbsp;обработку персональных данных и&nbsp;с&nbsp;<a href="#" data-msg="">политикой конфиденциальности</a></span></label>
+        <p class="bk__err" data-bk-err hidden>Не&nbsp;получилось отправить заявку. Позвоните нам: <a href="tel:+79500241177">+7 950 024 11 77</a></p>
+        <div class="bk__go"><button class="kbtn kbtn--wide" type="submit"><span>Отправить заявку</span><i><svg><use href="#i-arr"/></svg></i></button><p>Дату и&nbsp;время подберёт администратор по&nbsp;телефону. Оплата на&nbsp;месте после приёма.</p></div>
+      </form>
+    </section>
+
+    <!-- 3. заявка принята -->
+    <section class="bk__v bk__done" data-v="done" hidden>
+      <span class="bk__check" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="30"/><path d="M20 33l8 8 16-17"/></svg></span>
+      <p class="sheet__label"><i></i>Заявка принята</p>
+      <h3 class="sheet__h">Спасибо, <span id="bkWhen"></span>!<br><span>Скоро перезвоним</span></h3>
+      <div class="bk__ticket" data-bk-ticket></div>
+      <ul class="bk__todo">
+        <li><b>Подберём время</b><span>администратор позвонит на <span data-bk-tel style="white-space:nowrap;color:#070707"></span> в&nbsp;рабочее время, обычно в&nbsp;течение часа</span></li>
+        <li><b>Возьмите с&nbsp;собой</b><span>очки, которые носите сейчас, старые рецепты и&nbsp;выписки, если есть</span></li>
+        <li><b>Закладывайте 1–1,5&nbsp;часа</b><span>диагностику не&nbsp;торопим&nbsp;— так подбор получается точным</span></li>
+      </ul>
+      <p class="bk__or">Не&nbsp;хотите ждать звонка? Позвоните сами: <a href="tel:+79500241177">+7 950 024 11 77</a></p>
+      <div class="bk__done-go">
+        <a class="kbtn kbtn--light" href="https://yandex.ru/maps/org/tsentr_korrektsii_zreniya_doktora_koltsova/204181103196/" target="_blank" rel="noopener"><span>Маршрут</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+        <button class="kbtn" type="button" data-close><span>Готово</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 7 13l7.5-8"/></svg></i></button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ═════════ СПЕЦИАЛИСТ — подробнее (как карточка сотрудника в «Байкале»: панель справа, кнопки закрыть / назад / вперёд
+     вынесены слева за панель). Данные — SITE.spec (админка); низ панели с ценой и записью стоит на месте, листается середина ═════════ -->
+<div class="dp" id="dp" aria-hidden="true">
+  <div class="dp__bg" data-close></div>
+  <aside class="dp__panel" role="dialog" aria-modal="true" aria-labelledby="dpName">
+    <div class="dp__nav">
+      <button class="dp__btn" type="button" data-close aria-label="Закрыть"><svg><use href="#i-x"/></svg></button>
+      <button class="dp__btn" type="button" data-dp-step="-1" aria-label="Предыдущий специалист"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 9H3M7.5 4.5 3 9l4.5 4.5"/></svg></button>
+      <button class="dp__btn" type="button" data-dp-step="1" aria-label="Следующий специалист"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h12M10.5 4.5 15 9l-4.5 4.5"/></svg></button>
+    </div>
+    <div class="dp__scroll" id="dpScroll">
+      <div class="dp__photo"><img id="dpImg" src="" alt="" decoding="async"><span class="dp__n" id="dpN"></span></div>
+      <div class="dp__body" id="dpBody"></div>
+    </div>
+    <div class="dp__foot">
+      <p class="dp__price"><span id="dpSvc"></span><b id="dpPrice"></b></p>
+      <button class="kbtn kbtn--wide" type="button" id="dpBook"><span>Записаться</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></button>
+    </div>
+  </aside>
+</div>
+
+<!-- ═════════ ЖИЗНЬ ЦЕНТРА → СТАТЬЯ ═════════
+     лист поднимается снизу поверх страницы, адрес — #news-<id> (ссылкой можно поделиться), назад — Esc или крестик.
+     Внутри: шапка (рубрика, заголовок, подводка, кадр), текст колонкой, у мероприятия — карточка записи на вечер, внизу «Читайте также».
+     Содержимое собирает app.js из SITE.news -->
+<div class="ar" id="ar" aria-hidden="true">
+  <div class="ar__bg" data-close></div>
+  <article class="ar__sheet" role="dialog" aria-modal="true" aria-labelledby="arH" id="arSheet">
+    <div class="ar__bar">
+      <p class="sheet__label"><i></i>Жизнь центра</p>
+      <div class="ar__tools">
+        <button class="ar__share" type="button" data-ar-share><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 10.5a3 3 0 0 0 4.2 0l2.6-2.6a3 3 0 0 0-4.2-4.2l-.9.9M10.5 7.5a3 3 0 0 0-4.2 0l-2.6 2.6a3 3 0 0 0 4.2 4.2l.9-.9"/></svg><span>Скопировать ссылку</span></button>
+        <button class="sheet__x" type="button" data-close aria-label="Закрыть статью"><svg><use href="#i-x"/></svg></button>
+      </div>
+    </div>
+    <div class="ar__in" id="arIn"></div>
+  </article>
+</div>
+
+<!-- ═════════ ОТЗЫВЫ — панель справа: все отзывы листаются прямо в окне (reviews-data.js собирает админка,
+     грузится при первом открытии), длинные раскрываются по «Читать полностью». Открывает плашка рейтинга в блоке «Отзывы» ═════════ -->
+<div class="sheet rwp" id="rwp" aria-hidden="true">
+  <div class="sheet__bg" data-close></div>
+  <div class="sheet__panel rwp__panel" role="dialog" aria-modal="true" aria-labelledby="rwpH">
+    <button class="sheet__x" type="button" data-close aria-label="Закрыть"><svg><use href="#i-x"/></svg></button>
+    <p class="sheet__label"><i></i>Отзывы на&nbsp;Яндекс Картах</p>
+    <h3 class="sheet__h" id="rwpH">Что пишут гости</h3>
+    <div class="rwp__sum">
+      <b>5,0</b>
+      <span class="rwp__stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></span>
+      <span>208 оценок · 128 отзывов</span>
+    </div>
+    <div class="rwp__list" id="rwpList" tabindex="0" aria-label="Отзывы гостей"></div>
+    <a class="kbtn kbtn--wide" href="https://yandex.ru/maps/org/tsentr_korrektsii_zreniya_doktora_koltsova/204181103196/" target="_blank" rel="noopener"><span>Все отзывы на&nbsp;Яндекс Картах</span><i><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.25 12.75 12.75 5.25M5.25 5.25h7.5v7.5"/></svg></i></a>
+  </div>
+</div>
+
+<!-- просмотр видео -->
+<div class="player" id="player" aria-hidden="true">
+  <div class="player__bg" data-close></div>
+  <div class="player__box" id="playerBox"><video id="playerV" controls playsinline></video></div>
+  <button class="player__x" type="button" data-close aria-label="Закрыть"><svg><use href="#i-x"/></svg></button>
+</div>
+
+<!-- фото входа: угол дома с козырьком и дверь крупно -->
+<div class="player ent" id="ent" aria-hidden="true">
+  <div class="player__bg" data-close></div>
+  <div class="player__box ent__box" id="entBox">
+    <img class="ent__a" data-src="img/ct/entrance.webp" alt="Угол дома: вход в центр" loading="lazy" decoding="async">
+    <img class="ent__b" data-src="img/ct/door.webp" alt="Дверь центра крупно" loading="lazy" decoding="async">
+    <p class="ent__cap"><b>Вход с&nbsp;угла дома, под кованым козырьком</b><span>Казначейская ул.,&nbsp;4/16 · м.&nbsp;Сенная площадь — 230&nbsp;м</span></p>
+  </div>
+  <button class="player__x" type="button" data-close aria-label="Закрыть"><svg><use href="#i-x"/></svg></button>
+</div>
+
+<!-- данные для app.js: специалисты, «С чем приходят», «Жизнь центра», часы работы (собирает админка) -->
+<script>window.SITE = {"spec":{"koltsov":{"name":"Александр Кольцов","tag":"Главный врач","role":"Врач-офтальмолог · основатель центра","img":"img/s/dr-lamp.webp","thumb":"img/s/sp-koltsov.webp","svc":"Приём врача-офтальмолога","price":"5400","priceText":"5 400 ₽","lead":"Берётся за случаи, в которых другим не удалось помочь, — и учит этому других врачей.","dative":"доктору Кольцову","facts":[["22","года","в офтальмологии"],["16","лет","медицинский консультант в оптике"],["КМК","","ведёт интенсивы для врачей и оптометристов"]],"visit":["Разговор о жалобах и прошлых очках","Диагностика рефракции и бинокулярного зрения","Подбор коррекции в пробной оправе, при необходимости — с призмами","Рецепт и рекомендации по лечению"],"cv":[["2004","Военно-медицинская академия",0],["с 2010","медицинский консультант в оптике и оптометрии",0],["сейчас","главный врач центра, ведёт очные интенсивы КМК",0]]},"opt1":{"name":"Имя Фамилия","tag":"Оптометрист","role":"Оптометрист","img":"img/s/dp-opt1.webp","thumb":"img/s/sp-opt1.webp","svc":"Диагностика и подбор очков","price":"2000","priceText":"2 000 ₽","lead":"Подбирает очки по авторской методике доктора Кольцова — для дали, чтения и работы за экраном.","dative":"оптометристу","facts":null,"visit":["Проверка остроты зрения и рефракции","Бинокулярные функции и мышечный баланс глаз","Подбор коррекции в пробной оправе","Рецепт и советы по линзам и оправе"],"cv":[["20__","Образование: учебное заведение, специальность",1],["с 20__","Стаж в оптометрии",1],["20__","Интенсив КМК доктора Кольцова",1]]},"opt2":{"name":"Имя Фамилия","tag":"Оптометрист","role":"Оптометрист","img":"img/s/dp-opt2.webp","thumb":"img/s/sp-opt2.webp","svc":"Диагностика и подбор очков","price":"2000","priceText":"2 000 ₽","lead":"Прогрессивные и офисные линзы, очки для водителей, контроль близорукости у детей — всё по методике доктора Кольцова.","dative":"оптометристу","facts":null,"visit":["Проверка остроты зрения и рефракции","Бинокулярные функции и мышечный баланс глаз","Подбор коррекции в пробной оправе","Замеры под прогрессивные и офисные линзы"],"cv":[["20__","Образование: учебное заведение, специальность",1],["с 20__","Стаж в оптометрии",1],["20__","Интенсив КМК доктора Кольцова",1]]}},"order":["koltsov","opt1","opt2"],"hours":[null,["11:00","20:00"],["11:00","20:00"],["11:00","20:00"],["11:00","20:00"],["11:00","20:00"],["11:00","19:00"]],"addr":"Казначейская ул., 4/16 · м. Сенная площадь — 230 м","dur":"1–1,5 часа","send":"send.php","cases":[{"code":"Ш Б","v":"0,1","t":"Просто нужны новые очки","m":"Просто нужны|новые очки","how":"Старые очки уже не те: приходится щуриться, отодвигать телефон или снимать очки, чтобы прочитать.","what":"Проверяем зрение целиком, а не только строчки в таблице, подбираем рецепт и оправу, которая ему подходит. Через 14 дней звоним узнать, как вам в новых очках.","who":"","img":"img/cx/01.webp","blur":"img/cx/01-blur.webp"},{"code":"М Н К","v":"0,2","t":"Двоится в глазах","m":"","how":"Предметы раздваиваются — по горизонтали или по вертикали. Чаще к вечеру, за рулём или при чтении. Иногда двоение замечают, только когда прикрывают один глаз.","what":"Исследуем бинокулярное зрение и подбираем призматическую коррекцию: очки помогают глазам снова работать вместе. Это главная специализация доктора Кольцова.","who":"koltsov","img":"img/cx/02.webp","blur":"img/cx/02-blur.webp"},{"code":"Ы М Б Ш","v":"0,3","t":"Новые очки — и болит голова","m":"Новые очки —|и болит голова","how":"Рецепт вроде верный, а носить невозможно: тянет глаза, кружится голова, пол «уезжает». Очки лежат в ящике, а поиски продолжаются.","what":"Разбираемся, что пошло не так: рецепт, центровка, линзы или оправа. Перепроверяем рефракцию и бинокулярные функции и подбираем коррекцию, к которой можно привыкнуть.","who":"koltsov","img":"img/cx/03.webp","blur":"img/cx/03-blur.webp"},{"code":"Б Ы Н К М","v":"0,4","t":"Косоглазие — явное или скрытое","m":"Косоглазие — явное|или скрытое","how":"Глаз отклоняется — заметно со стороны или только когда вы устали. Скрытое косоглазие часто прячется за усталостью и головной болью.","what":"Измеряем угол отклонения и подбираем призмы в очках — так глазам проще держать общий фокус. При необходимости направляем к профильным специалистам.","who":"koltsov","img":"img/cx/04.webp","blur":"img/cx/04-blur.webp"},{"code":"И Н Ш М К","v":"0,5","t":"С астигматизмом мир «плывёт»","m":"С астигматизмом мир|«плывёт»","how":"Буквы двоятся контуром, линии кажутся наклонными, а в новых очках стены «заваливаются».","what":"Точно определяем силу и ось астигматизма и подбираем коррекцию поэтапно, проверяя её в пробной оправе — на ходу, вдаль и вблизи.","who":"","img":"img/cx/05.webp","blur":"img/cx/05-blur.webp"},{"code":"Н Ш Ы И К Б","v":"0,6","t":"К вечеру глаза устают","m":"","how":"Резь, сухость, тяжесть, хочется зажмуриться — особенно после дня за компьютером или долгой дороги.","what":"Проверяем аккомодацию и мышечный баланс глаз, подбираем очки для экрана или офиса с учётом расстояний вашего рабочего места.","who":"","img":"img/cx/06.webp","blur":"img/cx/06-blur.webp"},{"code":"Ш И Н Б К","v":"0,7","t":"Нужны очки и вдаль, и для чтения","m":"Нужны очки и вдаль,|и для чтения","how":"Текст приходится отодвигать всё дальше, а носить с собой двое очков неудобно.","what":"Подбираем прогрессивные или офисные линзы и точно их центрируем — от этого зависит, привыкнете ли вы за пару дней.","who":"","img":"img/cx/07.webp","blur":"img/cx/07-blur.webp"},{"code":"К Б М Ы Н","v":"0,8","t":"Глаза видят по-разному","m":"","how":"На одном глазу −1, на другом −5. В обычных очках картинки разного размера, и мозгу трудно сложить их в одну.","what":"Подбираем коррекцию при анизометропии так, чтобы изображения совпадали, и подсказываем линзы и оправу, которые это поддержат.","who":"koltsov","img":"img/cx/08.webp","blur":"img/cx/08-blur.webp"},{"code":"Б Ы Н К М Ш","v":"0,9","t":"У ребёнка растёт минус","m":"","how":"Близорукость прибавляет каждый год, а первые очки — самые важные.","what":"Подбираем коррекцию и средства контроля миопии, наблюдаем динамику и объясняем родителям, что можно сделать дома.","who":"koltsov","img":"img/cx/09.webp","blur":"img/cx/09-blur.webp"},{"code":"Н К И Б М Ш","v":"1,0","t":"Были у врачей — не помогло","m":"","how":"Несколько подборов, разные рецепты, а комфортно так и не стало. Возможно, вас направил к нам знакомый врач — или вы ищете второе мнение.","what":"Начинаем с полного разбора: что подбирали раньше и почему не сработало. Сложные случаи — наша работа, к нам направляют коллеги-врачи.","who":"koltsov","img":"img/cx/10.webp","blur":"img/cx/10-blur.webp"}],"news":{"show":true,"hideAfterDays":90,"items":[{"id":"ekran","tag":"event","date":"2026-10-01","eventDate":"2026-10-24","when":"24 октября, 18:00","title":"Вечер в центре: как выбрать очки для работы за экраном","text":"Доктор Кольцов расскажет, почему к вечеру устают глаза, а консультанты покажут офисные линзы. Количество мест ограничено.","img":"img/g-desk.webp","cover":"img/g-desk.webp","cta":"Записаться на вечер","read":3,"place":"Казначейская ул., 4/16 · зал оптики","seats":"Вход свободный, 20 мест","link":"","linkText":"","body":[{"p":"К вечеру глаза устают даже у тех, кто хорошо видит. Восемь часов на одном расстоянии от монитора, редкое моргание, свет экрана и лампы спорят друг с другом. Очки «для дали» или «для чтения» на этом расстоянии работают не так, как задумано, — отсюда тяжёлая голова и расплывающийся к шести часам текст."},{"h":"О чём расскажет доктор Кольцов"},{"ul":["почему к вечеру расплывается текст и болит голова — и когда дело не в диоптриях;","чем офисные линзы отличаются от прогрессивных и от очков для чтения;","как поставить монитор и свет, чтобы глазам было проще;","когда усталость — повод проверить, как глаза работают вместе."]},{"img":["img/doc-consult.webp","img/g-hall.webp"],"cap":"Встреча пройдёт в зале оптики — после рассказа можно примерить линзы и задать вопросы"},{"h":"Что покажут в салоне"},{"p":"Консультанты подготовят офисные линзы нескольких типов. Их можно примерить на своём рабочем расстоянии — с ноутбуком или телефоном — и сравнить с очками, в которых вы работаете сейчас."},{"note":"Возьмите с собой очки, в которых работаете за компьютером: разберём их на примере."},{"h":"Как попасть"},{"p":"Вход свободный, но мест в зале немного — запишитесь заранее. Накануне пришлём напоминание и схему прохода с Казначейской."}]},{"id":"titan","tag":"frames","date":"2026-09-20","eventDate":"","when":"","title":"Новая коллекция японских титановых оправ","text":"Лёгкие, тонкие и без логотипов — ручная работа небольшой мастерской. Только у нас в Петербурге.","img":"img/g-mirror.webp","cover":"img/g-flowers.webp","cta":"","read":2,"place":"","seats":"","link":"","linkText":"","body":[{"p":"В зале появилась новая коллекция титановых оправ небольшой японской мастерской. Тонкий металл, ручная полировка и ни одного логотипа на заушниках — оправа не спорит с лицом и почти не ощущается на переносице."},{"h":"Почему титан"},{"p":"Титан легче стали, не темнеет со временем и не вызывает раздражения кожи. Тонкий ободок держит линзу надёжно, поэтому такие оправы хорошо подходят под сложные рецепты — если правильно подобрать размер и посадку."},{"img":["img/g-mirror.webp","img/why-frame.webp"],"cap":"Коллекция стоит на отдельной полке у зеркала — примерить можно без записи"},{"h":"Подбор под рецепт"},{"p":"Красивая оправа — только половина очков. Консультант проверит, совпадут ли центры линз с вашими зрачками, хватит ли высоты под прогрессивные линзы и как оправа сядет через месяц носки."},{"note":"Если рецепту больше года, начните с диагностики: подбор оправы под старый рецепт — частая причина неудачных очков."}]},{"id":"kmk","tag":"doctor","date":"2026-09-10","eventDate":"","when":"","title":"Доктор Кольцов провёл интенсив для оптометристов","text":"В сентябре на интенсиве КМК специалисты из 20 городов разбирали призматическую коррекцию.","img":"img/news-kmk.webp","cover":"img/news-kmk.webp","cta":"","read":2,"place":"","seats":"","link":"https://kmkschool.ru","linkText":"Сайт школы КМК","body":[{"p":"В сентябре Александр Кольцов провёл очный интенсив КМК для офтальмологов и оптометристов. Специалисты из двадцати городов три дня разбирали призматическую коррекцию — от диагностики до готовых очков."},{"h":"Что разбирали"},{"ul":["как распознать проблемы бинокулярного зрения на обычном приёме;","когда призмы в очках помогают, а когда только маскируют проблему;","как проверить призматический рецепт в пробной оправе;","реальные случаи пациентов центра — с их согласия и без имён."]},{"img":["img/doc-teach.webp","img/news-kmk.webp"],"cap":"Практика в парах: участники проверяют друг у друга мышечный баланс"},{"p":"Методика, которой учатся на интенсивах, — та же, по которой работают оптометристы центра. Поэтому сложный случай здесь не «передают дальше», а разбирают вместе с главным врачом."},{"note":"Расписание следующих интенсивов — на сайте школы КМК."}]}]}};</script>
+<!-- Leaflet (живая карта «Контактов») подгружает app.js только на ПК, когда блок подходит к экрану -->
+<script src="smooth.js?v=3"></script>
+<script src="app.js?v=1055"></script>
+</body>
+</html>

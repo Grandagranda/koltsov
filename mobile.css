@@ -1,0 +1,797 @@
+/* ==========================================================================
+   Телефон и планшет вертикально (≤ 900 px) — подключён с media="(max-width: 900px)" поверх ПК-стилей.
+
+   Язык тот же: Involve + Manrope, подписи с золотой точкой, синий #6E92C2, листы со скруглённым
+   верхом, стекло. Раскладка своя — под палец и узкий экран:
+   · первый экран: вертикальный ролик (video/hero-m.mp4, 2 МБ), запись и видео под большим пальцем;
+     по прокрутке, как на ПК, проявляется мысль (без блюра — дорого для телефона);
+   · «О центре»: липкая сцена с моделью, карточки выплывают снизу и встают одна на другую (обычная прокрутка);
+   · «С чем приходят»: таблица Сивцева, строка раскрывается на месте (кадр грузится при первом раскрытии);
+   · «Путь гостя»: лента со свайпом и шкалой; «Главный врач»: портрет, факты, компетенции;
+   · специалисты строками, «Жизнь центра» — свежая крупно и две строками, карта — снимок + Яндекс Карты;
+   · окна — листы снизу на весь экран, «назад» их закрывает; меню — бургер; плашка записи снизу.
+
+   Единицы: --f — 1px кадра 390 (на 360 — .92px, на 430 — 1.1px, дальше застывает на 1.2px);
+   --pad — поле: 20f на телефоне, на планшете колонка 680 по центру; шапка, логотип и кнопки стоят на том же поле (одна сетка).
+   ========================================================================== */
+:root{
+  --f:min(calc(100vw / 390), 1.2px);
+  --g:calc(20 * var(--f));
+  --pad:max(var(--g), calc((100vw - 680px) / 2));
+  --sh:calc(24 * var(--f));
+  --sb:env(safe-area-inset-bottom, 0px);
+  --st:env(safe-area-inset-top, 0px);
+}
+html{font-size:10px}
+body{font-size:max(14px, calc(15 * var(--f)))}
+html.is-locked,html.is-locked body{overflow:hidden}
+/* привязка прокрутки браузера сдвигала страницу, когда раскрывается ответ выше «якоря» — нажатый пункт уезжал вверх;
+   компенсацию при раскрытии/сворачивании делает app.js (accToggle) */
+html,body{overflow-anchor:none}
+a,button,[tabindex]{-webkit-tap-highlight-color:transparent}
+
+/* ═════════ общее для блоков ═════════ */
+.sx{z-index:5}
+.sx__in{padding:calc(60 * var(--f)) var(--pad)}
+.sx__label{gap:8px;font-size:max(10px, calc(12 * var(--f)))}
+.sx__label i{width:4px;height:4px;min-width:0;min-height:0}
+.sx__h,.tm .sx__h,.rw .sx__h,.lf .sx__h,.fq .sx__h,.ct .sx__h,.jr .sx__h{margin-top:calc(12 * var(--f));font-size:calc(36 * var(--f));line-height:.98;letter-spacing:-.01em;white-space:normal}
+.sx__lead{font-size:max(14px, calc(15.5 * var(--f)))}
+.sx__head{display:block}
+/* строки заголовков переносятся ровно, без одиноких слов */
+.sx__line>span,.hv__line>span,.ab__line>span,.cx__line>span{text-wrap:balance}
+/* на телефоне тексты и кадры не «появляются» по прокрутке — стоят сразу (подъёмы, шторки и строки из маски подтормаживали
+   прокрутку, а стекло компетенций под шторкой наблюдатель не видел — на его месте была пустота). Вступление первого экрана — своё (.hv) */
+.rv,.rv.is-in{opacity:1;transform:none;transition:none}
+.rv-shot,.rv-shot.is-in{clip-path:none;transition:none}
+.rv-shot img,.rv-shot video{transform:none;transition:none}
+.sx__line>span,.ab__line>span,.cx__line>span{transform:none;transition:none}
+
+/* кнопка: синяя плашка и сегмент со стрелкой — по высоте пальца */
+.kbtn{height:calc(50 * var(--f));min-height:44px;border-radius:6px;font-size:max(14px, calc(15 * var(--f)))}
+.kbtn>span{padding:0 calc(20 * var(--f))}
+.kbtn>i{width:calc(50 * var(--f));min-width:44px}
+.kbtn svg{width:calc(17 * var(--f));height:calc(17 * var(--f));min-width:0;min-height:0}
+.kbtn--wide>span{padding-left:calc(50 * var(--f))}
+
+/* ═════════ шапка сайта: логотип, звонок, меню; уходит вверх, пока листают вниз ═════════
+   кнопки — кружки как на первом экране (макет 93:605/606): звонок светлый, меню синее */
+.hd{grid-template-columns:1fr auto;height:calc(62 * var(--f));min-height:0;padding:0 calc(var(--pad) - 6 * var(--f)) 0 var(--pad);
+  transition:translate .45s cubic-bezier(.4,0,.2,1)}
+.hd.is-up{translate:0 -101%}
+.hd__nav,.hd__tel,.hd__cta{display:none}
+.hd__logo img{height:calc(42 * var(--f));min-height:0}
+.hd__right{gap:calc(5 * var(--f))}
+.hd__ico{position:relative;display:grid;place-items:center;width:calc(46 * var(--f));height:calc(46 * var(--f));min-width:42px;min-height:42px;border-radius:50%;color:#070707;
+  background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1px rgba(7,7,7,.1)}
+.hd__ico svg{width:calc(16 * var(--f));height:calc(16 * var(--f))}
+.hd__burger{background:#6E92C2;box-shadow:inset 0 0 0 1px rgba(255,255,255,.24);color:#fff}
+/* бургер: две линии 20×2 (макет 93:609); меню открывается листом поверх шапки, со своим крестиком */
+.hd__burger i{position:absolute;left:50%;top:50%;width:calc(20 * var(--f));height:2px;margin:-1px 0 0 calc(-10 * var(--f));background:currentColor;
+  transition:transform .45s var(--ease)}
+.hd__burger i:first-child{transform:translateY(calc(-3.5 * var(--f)))}
+.hd__burger i:last-child{transform:translateY(calc(3.5 * var(--f)))}
+/* только для ПК / только для телефона внутри одной строки (подпись первого экрана) */
+.d-only,.hv__line--d{display:none!important}
+
+/* ═════════ 1. ПЕРВЫЙ ЭКРАН ═════════  по макету 93:14 (y 0…769)
+   Сцена — высота «большого» окна (видео и под строкой браузера), текст и кнопки — над строкой (svh) */
+.hv{height:190vh;height:190svh}
+.hv__stage{height:100vh;height:100lvh}
+.hv__video{object-position:50% 50%}
+.hv__shade{background:
+  linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,.18) calc(90 * var(--f)),rgba(0,0,0,0) calc(160 * var(--f))),
+  linear-gradient(0deg,rgba(0,0,0,.84) 0,rgba(0,0,0,.66) 24%,rgba(0,0,0,.38) 40%,rgba(0,0,0,.14) 54%,rgba(0,0,0,0) 66%),
+  rgba(0,0,0,.12)}
+.hv__nav{height:calc(72 * var(--f))}
+/* плашка логотипа 142×72, скругление низа 22; знак 113×57 (макет 93:83/84) */
+.hv__logo{left:var(--pad);width:calc(142 * var(--f));height:calc(72 * var(--f));border-radius:0 0 calc(22 * var(--f)) calc(22 * var(--f))}
+.hv__logo img{left:calc(14 * var(--f));top:calc(7 * var(--f));width:calc(113 * var(--f));height:calc(57 * var(--f))}
+.hv__links,.hv__tel,.hv__cta{display:none}
+.hv__mbtns{position:absolute;right:var(--pad);top:calc(7 * var(--f));display:flex;gap:calc(5 * var(--f))}
+/* кружки 52: звонок — стекло 13 % с обводкой 24 %, меню — синий (блюр фона Figma 19.9 → 10px) */
+.hv__ico{position:relative;display:grid;place-items:center;width:calc(52 * var(--f));height:calc(52 * var(--f));min-width:44px;min-height:44px;border-radius:50%;color:#fff;
+  background:rgba(255,255,255,.13);box-shadow:inset 0 0 0 1px rgba(255,255,255,.24);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hv__ico.hd__burger{background:#6E92C2;-webkit-backdrop-filter:none;backdrop-filter:none}
+.hv__ico svg{width:calc(16 * var(--f));height:calc(16 * var(--f))}
+
+.hv__frame{top:auto;bottom:0;bottom:calc(100lvh - 100svh);height:auto;display:flex;flex-direction:column;align-items:stretch;
+  padding:0 var(--pad) calc(36 * var(--f))}
+.hv__kicker,.hv__h,.hv__lead{position:relative;left:auto;top:auto}
+.hv__kicker{align-items:center;gap:calc(8 * var(--f));white-space:nowrap;font-size:max(10px, calc(12 * var(--f)));font-weight:600;line-height:1.27;color:rgba(255,255,255,.86)}
+.hv__kicker::before{width:5px;height:5px;border-radius:1px}
+.hv__h{margin-top:calc(9 * var(--f));white-space:normal;font-size:calc(40 * var(--f));line-height:.96;letter-spacing:-.0128em}
+.hv.is-in .hv__line.m-only:nth-of-type(5)>span{transition-delay:.63s}
+.hv.is-in .hv__line.m-only:nth-of-type(6)>span{transition-delay:.71s}
+.hv__lead{width:auto;max-width:calc(345 * var(--f));margin-top:calc(11 * var(--f));font-size:max(14px, calc(15 * var(--f)));font-weight:500;line-height:1.39;color:rgba(255,255,255,.72)}
+.hv__lead br{display:none}
+.hv__book{margin-top:calc(21 * var(--f))}
+/* «Минута в центре» (макет 93:454): стекло 13 %, кадр-обложка 70×63, подпись в две строки, синий кружок; тап — видео со звуком */
+.hv__card{position:relative;right:auto;top:auto;bottom:auto;width:auto;height:calc(69 * var(--f));margin-top:calc(16 * var(--f));display:grid;align-items:center;align-content:center;
+  grid-template-columns:calc(70 * var(--f)) 1fr calc(46 * var(--f));column-gap:calc(13 * var(--f));row-gap:calc(5 * var(--f));padding:calc(3 * var(--f)) calc(13 * var(--f)) calc(3 * var(--f)) calc(3 * var(--f));
+  border-radius:6px;background:rgba(255,255,255,.13);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hv__card::after{display:none}
+.hv__card-m{position:relative;inset:auto;grid-row:1 / span 2;align-self:stretch;width:calc(70 * var(--f));height:auto;overflow:hidden;border-radius:5px}
+.hv__card-k,.hv__card-t{position:static;grid-column:2;white-space:normal}
+.hv__card-k{align-self:end;font-size:max(9.5px, calc(10 * var(--f)));font-weight:600;color:rgba(255,255,255,.46)}
+.hv__card-t{align-self:start;max-width:calc(150 * var(--f));font-size:max(13px, calc(14 * var(--f)));font-weight:600;line-height:1.14}
+.hv__card-play{position:static;grid-column:3;grid-row:1 / span 2;width:calc(46 * var(--f));height:calc(46 * var(--f));border-radius:50%;background:#6E92C2;color:#fff}
+.hv__card:hover .hv__card-m video{transform:none}
+/* появление: те же задержки, сдвиг в пикселях */
+.hv__kicker,.hv__lead,.hv__card,.hv__book{transform:translateY(14px)}
+.hv__book{opacity:0;transition:opacity 1.1s ease,transform 1.3s cubic-bezier(.16,.84,.24,1)}
+.hv.is-in .hv__book{opacity:1;transform:none;transition-delay:1.02s}
+.hv.is-in .hv__card{transition-delay:1.14s}
+/* мысль по прокрутке */
+.hv__say{left:var(--pad);right:var(--pad);width:auto;top:44%}
+.hv__say-k{gap:8px;margin-bottom:calc(16 * var(--f));font-size:max(10px, calc(12 * var(--f)))}
+.hv__say-k::before{width:5px;height:5px}
+.hv__say-t{font-size:calc(25 * var(--f));line-height:1.24;letter-spacing:-.005em}
+@media (prefers-reduced-motion:reduce){.hv__book{transition:none!important;opacity:1!important;transform:none!important}}
+
+/* ═════════ 2. О ЦЕНТРЕ ═════════  по макету 93:14 (y 820…2093)
+   Лист со скруглённым верхом наезжает на первый экран: заголовок, текст, кролик. Ниже — сцена: полки, модель и вуаль одним роликом
+   (телефон 390×515 — video/model-m2.mp4, планшет 1.6:1 — model-t.mp4; _tools/model-m2.cjs), края растушёваны в бумагу.
+   Сцена с карточкой 01 закрепляется (низом по низу экрана), прокрутка 1:1 выносит снизу 02 и 03 — каждая наезжает на предыдущую,
+   накрытая чуть уменьшается и отходит (app.js abDrawM, без гашения). Стекло — размытая копия сцены (frost-m / frost-t), стоит вместе с карточкой.
+   --sch — высота сцены, --ch — карточки, --path — путь одной карточки, --pinh — закреплённая часть (сцена + карточка ниже неё). */
+.ab{height:auto;margin-top:calc(-1 * var(--sh));border-radius:var(--sh) var(--sh) 0 0;
+  --sch:calc(515 * var(--f));--cw:min(calc(100vw - 2 * var(--pad)), 520px);--cl:calc((100vw - var(--cw)) / 2);--cu:calc(var(--cw) / 597);--ch:calc(196 * var(--f) + 301 * var(--cu));
+  --lap:calc(89 * var(--f));--path:calc(var(--ch) + 24 * var(--f));--pinh:calc(var(--sch) - var(--lap) + var(--ch) + 34 * var(--f))}
+.ab__stage{position:relative;top:auto;height:auto;overflow:visible;container-type:normal}
+.ab__frame{position:relative;left:auto;bottom:auto;width:auto;height:auto;margin:0;display:flex;flex-direction:column}
+.ab__label,.ab__h,.ab__lead{position:relative;left:auto;top:auto;margin-left:var(--pad);margin-right:var(--pad)}
+.ab__label{order:1;margin-top:calc(58 * var(--f));gap:8px;font-size:max(10px, calc(12 * var(--f)))}
+.ab__label i{width:4px;height:4px}
+.ab__h{order:2;margin-top:calc(16 * var(--f));white-space:normal;font-size:calc(35 * var(--f));line-height:.977;letter-spacing:0}
+.ab__lead{order:3;width:auto;margin-top:calc(13 * var(--f))}
+.ab__lead p{font-size:max(14px, calc(15 * var(--f)));line-height:1.453}
+.ab__lead p+p{margin-top:calc(9 * var(--f))}
+.ab__label,.ab__lead,.ab__follow{opacity:1;transform:none;transition:none}
+
+/* кролик «Следуйте за белым кроликом» — после текста; верх сцены заходит под него */
+.ab__follow{order:3;position:relative;left:auto;bottom:auto;top:auto;z-index:2;align-self:flex-start;
+  margin:calc(13 * var(--f)) var(--pad) 0;font-size:max(10px, calc(10.5 * var(--f)));gap:calc(12 * var(--f))}
+.ab__rb{width:calc(36 * var(--f));height:calc(62 * var(--f));min-width:0;min-height:0}
+
+/* закреплённая часть: держится низом у низа экрана, пока две карточки проходят свой путь, плюс короткая пауза */
+.ab__run{order:4;display:block;position:relative;height:calc(var(--pinh) + 2 * var(--path) + 22svh);margin-top:calc(-28 * var(--f))}
+.ab__pin{display:block;position:sticky;top:min(0px, calc(100svh - var(--pinh)));height:var(--pinh);overflow:clip}
+.ab__scene{position:relative;inset:auto;z-index:0;width:100%;height:var(--sch);overflow:hidden}
+.ab__bg,.ab__veil{display:none}
+.ab__video{left:0;top:0;width:100%;height:100%;object-fit:cover}
+/* растушёвка в бумагу: сверху 18 % и снизу с 74 % (макет 93:462/463: 95 и 93 из 515), ниже — бумага; спад многоточечный */
+.ab__scene::before,.ab__scene::after{content:"";position:absolute;left:0;right:0;z-index:2;pointer-events:none}
+.ab__scene::before{top:0;height:18.4%;
+  background:linear-gradient(180deg,#F9F5F2 0%,rgba(249,245,242,.86) 18%,rgba(249,245,242,.62) 38%,rgba(249,245,242,.34) 60%,rgba(249,245,242,.12) 80%,rgba(249,245,242,0) 100%)}
+.ab__scene::after{top:73.8%;bottom:0;
+  background:linear-gradient(180deg,rgba(249,245,242,0) 0,rgba(249,245,242,.12) 20%,rgba(249,245,242,.36) 43%,rgba(249,245,242,.64) 65%,rgba(249,245,242,.88) 86%,#F9F5F2 100%)}
+
+/* колода: все три карточки на одном месте — наезжают на низ сцены на 89; 02 и 03 ждут ниже края закреплённой части */
+.ab__cards{display:block;position:absolute;inset:0;z-index:3;pointer-events:none}
+/* карточка 350×372: верх с текстом 196, кадр — в единицах макетной карточки 597 (--u) */
+.ab__card{position:absolute;left:var(--cl);top:calc(var(--sch) - var(--lap));z-index:auto;
+  --u:var(--cu);width:var(--cw);height:var(--ch);margin:0;border-radius:calc(18 * var(--f));pointer-events:auto;
+  transform:translate3d(0,var(--ty,0px),0);transform-origin:50% 0;will-change:transform}
+.ab__card+.ab__card{--ty:calc(var(--path) + 40px)}
+.ab__glass{background:
+    linear-gradient(rgba(255,255,255,.46),rgba(255,255,255,.46)),
+    url(img/ab2/frost-m.webp) no-repeat calc(-1 * var(--cl)) calc(var(--lap) - var(--sch)) / 100vw calc(915 * var(--f)),
+    #F9F5F2}
+.ab__body{min-height:calc(196 * var(--f));padding:calc(24 * var(--f)) calc(20 * var(--f)) 0}
+.ab__n{gap:8px;font-size:max(10px, calc(10.5 * var(--f)))}
+.ab__n i{width:4px;height:4px}
+.ab__t{margin-top:calc(17 * var(--f));white-space:normal;font-size:calc(19 * var(--f));line-height:1.253}
+.ab__p{width:auto;max-width:calc(302 * var(--f));margin-top:calc(11 * var(--f));font-size:max(13px, calc(14 * var(--f)));line-height:1.42;color:rgba(7,7,7,.67)}
+/* кадры карточек 01 и 03 в макете крупнее, чем на ПК (02 — как было) */
+.ab__card:nth-of-type(1) .ab__img{--ix:13.6!important;--iy:27.3!important;--iw:588.4!important;--ih:394!important}
+.ab__card:nth-of-type(3) .ab__img{--ix:5.1!important;--iy:11.9!important;--iw:586.7!important;--ih:298.5!important}
+
+/* ═════════ 3. С ЧЕМ ПРИХОДЯТ ═════════  по макету (y 2134…2948)
+   На той же бумаге, что «О центре». Список строками по 72: название и плюс; тап раскрывает строку на месте —
+   кадр с меткой, «как бывает», «что делаем» и запись. Открыта одна. */
+.cx{z-index:4;margin-top:0;border-radius:0}
+.cx__wrap{display:block;padding:calc(58 * var(--f)) var(--pad) calc(68 * var(--f))}
+.cx__left{width:auto}
+.cx__photo{display:none}
+.cx__label{gap:8px;font-size:max(10px, calc(12 * var(--f)))}
+.cx__label i{width:4px;height:4px}
+.cx__h{margin:calc(11 * var(--f)) 0 calc(33 * var(--f));font-size:calc(35 * var(--f));line-height:.977}
+/* пункты — белые карточки с зазором, как в «Частых вопросах»: раскрытая видна целиком, следующая — отдельная плашка с плюсом */
+.cx__chart{display:flex;flex-direction:column;gap:calc(8 * var(--f))}
+.cx__row{grid-template-columns:1fr calc(36 * var(--f));grid-template-rows:calc(64 * var(--f)) auto;grid-template-areas:"t p" "m m";align-items:center;column-gap:calc(12 * var(--f));
+  padding:0 calc(14 * var(--f)) 0 calc(18 * var(--f));min-height:0;border-radius:calc(14 * var(--f));background:#fff;transition:box-shadow .5s ease}
+.cx__row.is-open{box-shadow:0 calc(14 * var(--f)) calc(36 * var(--f)) rgba(7,7,7,.06)}
+.cx__code{display:none}
+.cx__t{grid-area:t;padding:calc(10 * var(--f)) 0;font-size:max(15px, calc(17 * var(--f)));font-weight:500;line-height:1.2;letter-spacing:0}
+.cx__pm{grid-area:p;display:block;position:relative;justify-self:end;width:calc(36 * var(--f));height:calc(36 * var(--f));min-width:32px;min-height:32px;border-radius:8px;background:#F3EEE8;
+  transition:background-color .4s ease,opacity .8s ease}
+.cx__pm::before,.cx__pm::after{content:"";position:absolute;left:50%;top:50%;width:11px;height:2px;background:#070707;translate:-50% -50%;transition:rotate .5s var(--out),background-color .4s ease}
+.cx__pm::after{rotate:90deg}
+.cx__row.is-open .cx__pm{background:var(--acc)}
+.cx__row.is-open .cx__pm::before,.cx__row.is-open .cx__pm::after{background:#fff}
+.cx__row.is-open .cx__pm::after{rotate:0deg}
+/* наведение с ПК на телефоне не действует; соседние пункты не бледнеют — карточки и так разделены */
+.cx__chart:hover .cx__t{color:var(--ink)}
+.cx__chart .cx__row.is-on .cx__t,.cx.is-in .cx__row.is-on .cx__t{transform:none}
+.cx__label{opacity:1;transition:none}
+.cx__row .cx__t,.cx.is-in .cx__row .cx__t{opacity:1;transform:none;transition:color .3s ease}
+.cx__more{grid-area:m;display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .55s var(--io),visibility 0s linear .55s}
+.cx__row.is-open .cx__more{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .55s var(--io),visibility 0s}
+.cx__more>div{min-height:0;overflow:hidden}
+.cx__mi{padding:calc(2 * var(--f)) calc(4 * var(--f)) calc(20 * var(--f)) 0;opacity:0;transform:translateY(-8px);transition:opacity .3s ease,transform .45s var(--out)}
+.cx__row.is-open .cx__mi{opacity:1;transform:none;transition:opacity .5s ease .12s,transform .7s var(--out) .08s}
+.is-snap .cx__more,.is-snap .cx__mi,.is-snap .fq__a,.is-snap .fq__a p{transition:none!important}
+/* у кадров ПК низ размыт под стекло (запечено) — на телефоне видна верхняя часть, 16:10 */
+.cx__mimg{position:relative;margin:0;aspect-ratio:16/10;overflow:hidden;border-radius:10px;background:#E8E1D8}
+.cx__mimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0%;opacity:0;transition:opacity .5s ease}
+.cx__mimg img.is-ld{opacity:1}
+.cx__mmeta{position:absolute;left:calc(10 * var(--f));top:calc(10 * var(--f));display:flex;align-items:center;gap:calc(10 * var(--f));padding:calc(7 * var(--f)) calc(10 * var(--f));border-radius:6px;
+  background:rgba(255,255,255,.78);box-shadow:inset 0 0 0 1px #fff;font:500 max(9px, calc(10 * var(--f)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:rgba(7,7,7,.5)}
+.cx__mmeta b{font:500 max(10px, calc(11 * var(--f)))/1 "Involve",sans-serif;color:var(--acc)}
+.cx__mtx{margin-top:calc(16 * var(--f))}
+.cx__mtx .cx__k{margin-bottom:calc(6 * var(--f));font-size:max(9px, calc(10 * var(--f)));color:rgba(7,7,7,.36)}
+.cx__mtx p{font:400 max(14px, calc(15 * var(--f)))/1.45 "Involve",sans-serif;color:rgba(7,7,7,.74)}
+.cx__mbtn{display:none!important}
+
+/* ═════════ 4. КАК ПРОХОДИТ ПОДБОР ═════════  по макету (y 2992…3727)
+   Белый лист. Заголовок, лента шагов 301×410 со свайпом (виден краешек следующей), под ней шкала: следит за лентой,
+   номер — переход к шагу. Кадр внутри карточки чуть едет навстречу свайпу (app.js). */
+.jr{margin-top:calc(-1 * var(--sh));border-radius:var(--sh) var(--sh) 0 0}
+.jr__run{height:auto!important}
+.jr__pin{position:relative;top:auto;height:auto;overflow:visible;display:flex;flex-direction:column;padding:calc(58 * var(--f)) 0 calc(89 * var(--f))}
+.jr__head{display:contents}
+.jr__head>div:first-child{order:1;padding:0 var(--pad)}
+.jr .sx__h{font-size:calc(32 * var(--f));line-height:1.03;letter-spacing:-.011em}
+.jr__scale{order:3;width:auto;margin:calc(30 * var(--f)) var(--pad) 0;padding-bottom:0}
+.jr__ticks{height:calc(12 * var(--f))}
+.jr__nums{margin-top:calc(9 * var(--f));font-size:max(10px, calc(10.5 * var(--f)))}
+.jr__nums span{position:relative;cursor:pointer}
+.jr__nums span::after{content:"";position:absolute;left:50%;top:50%;width:40px;height:36px;translate:-50% -50%}
+.jr__nums span:first-child::after{left:0;translate:0 -50%}
+.jr__nums span:last-child::after{left:auto;right:0;translate:0 -50%}
+.jr__track{order:2;position:relative;display:flex;gap:calc(13 * var(--f));width:auto;margin-top:calc(46 * var(--f));padding:0 var(--pad);
+  overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);overscroll-behavior-x:contain;
+  scrollbar-width:none;transform:none!important;will-change:auto}
+.jr__track::-webkit-scrollbar{display:none}
+.jr__track::after{content:"";flex:0 0 calc(var(--pad) - 13 * var(--f))}
+.jr__track{--jw:calc(301 * var(--f))}
+.jr__step{width:var(--jw);height:calc(410 * var(--f));scroll-snap-align:start;scroll-snap-stop:always;border-radius:calc(16 * var(--f))}
+.jr__step:first-child .jr__m>img{object-position:12% 50%}
+/* растяжки макета: сверху до 114 от верха карточки, снизу 115 — тёмные, спад многоточечный */
+.jr__step::after{background:
+  linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,.37) calc(23 * var(--f)),rgba(0,0,0,.24) calc(46 * var(--f)),rgba(0,0,0,.12) calc(70 * var(--f)),rgba(0,0,0,.04) calc(94 * var(--f)),rgba(0,0,0,0) calc(114 * var(--f))),
+  linear-gradient(0deg,rgba(0,0,0,.66) 0,rgba(0,0,0,.5) calc(23 * var(--f)),rgba(0,0,0,.33) calc(46 * var(--f)),rgba(0,0,0,.17) calc(70 * var(--f)),rgba(0,0,0,.05) calc(96 * var(--f)),rgba(0,0,0,0) calc(118 * var(--f)))}
+/* подсказка, что ленту можно листать: один раз при первом показе (app.js) */
+.jr__track.is-nudge>*{animation:jrNudge 1.3s cubic-bezier(.45,0,.2,1) both}
+@keyframes jrNudge{0%,100%{transform:none}38%{transform:translateX(calc(-46 * var(--f)))}62%{transform:translateX(calc(-46 * var(--f)))}}
+/* шапка карточки (макет 93:491): номер 24 и «/06», черта на 64, название 18; линия на 48 с отступами 13; описание 13 снизу */
+.jr__c{padding:0 calc(13 * var(--f)) calc(14 * var(--f));text-shadow:0 0 6px rgba(0,0,0,.3)}
+.jr__top{height:calc(48 * var(--f))}
+.jr__no{width:calc(51 * var(--f));padding-top:calc(12 * var(--f));font-size:calc(24 * var(--f));line-height:1.39;letter-spacing:-.04em}
+.jr__no span{margin:calc(2 * var(--f)) 0 0 1px;font-size:max(9px, calc(10 * var(--f)))}
+.jr__top::before{left:calc(51 * var(--f));top:0;height:calc(48 * var(--f))}
+.jr__name{padding:calc(13 * var(--f)) 0 0 calc(10 * var(--f))}
+.jr__name h3{font-size:calc(18 * var(--f));line-height:1.39;text-shadow:0 4px 17px rgba(0,0,0,.43)}
+.jr__name p,.jr__dots{display:none}
+.jr__d{max-width:calc(268 * var(--f));font-size:max(12.5px, calc(13 * var(--f)));line-height:1.46}
+.jr__end{width:var(--jw, 300px);height:auto;align-self:stretch;flex:none;padding:0 calc(6 * var(--f)) 0 calc(12 * var(--f));gap:calc(22 * var(--f));scroll-snap-align:end}
+.jr__end-h{font-size:calc(35 * var(--f))}
+
+/* ═════════ 5. ГЛАВНЫЙ ВРАЧ ═════════  по макету (y 3727…5168)
+   Плашка-портрет из макета (img/dk/plate-m.webp: витрина в расфокусе, доктор, растушёвка низа) с отступом 4–5 от края листа;
+   ниже подпись, имя одной строкой, подводка, три факта строками и компетенции белой карточкой с записью. */
+.dk{display:block;height:auto;min-height:0;margin-top:calc(-1 * var(--sh));border-radius:var(--sh) var(--sh) 0 0;padding:0 0 calc(92 * var(--f))}
+.dk__scene{position:relative;inset:auto;z-index:0;width:auto;margin:calc(5 * var(--f)) calc(4 * var(--f)) 0;aspect-ratio:382/372;max-height:none;
+  overflow:hidden;border-radius:calc(21 * var(--f)) calc(21 * var(--f)) calc(16 * var(--f)) calc(16 * var(--f));transform:translateZ(0)}
+.dk__img{inset:0;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;translate:none;scale:1;transition:none}
+.dk__scene::after{display:none}
+.dk__l{position:relative;z-index:2;margin-top:calc(31 * var(--f));padding:0 var(--pad)}
+.dk__label{position:relative;left:auto;top:auto;font-size:max(10px, calc(12 * var(--f)));color:#7A5F37}
+.dk__name{position:relative;left:auto;top:auto;margin-top:calc(8 * var(--f));white-space:nowrap;font-size:calc(35 * var(--f));font-weight:600;line-height:1.314;letter-spacing:0}
+.dk__name .sx__line{display:inline-block}
+.dk__name .sx__line:first-child{margin-right:.24em}
+.dk__lead{position:relative;left:auto;top:auto;width:auto;max-width:none;margin:calc(4 * var(--f)) 0 0;font-size:max(13.5px, calc(14 * var(--f)));line-height:1.557;color:rgba(7,7,7,.6)}
+/* факты: число 44 синим, подпись «года» к его низу, текст справа с 130 */
+.dk__creds{margin-top:calc(23 * var(--f));padding-top:0;border-top:1px solid rgba(0,0,0,.06)}
+.dk__creds li,.dk__creds a{position:relative;left:auto;top:auto;width:auto;height:auto;display:flex;align-items:baseline}
+.dk__creds li{padding:calc(12 * var(--f)) 0 calc(13 * var(--f));border-bottom:1px solid rgba(0,0,0,.06)}
+.dk__creds li:last-child{border-bottom:0}
+.dk__creds li:has(a){display:block;padding:calc(12 * var(--f)) 0 calc(13 * var(--f))}
+.dk__creds a{min-height:0;padding:0}
+.dk__creds a{inset:auto}
+.dk__creds b{position:relative;left:auto;top:auto;flex:none;font-size:calc(44 * var(--f));line-height:1}
+.dk__creds small{position:relative;left:auto;top:auto;flex:none;align-self:baseline;margin:0 0 0 calc(2 * var(--f));font-size:max(9.5px, calc(10.5 * var(--f)));font-weight:600;color:rgba(7,7,7,.26)}
+.dk__creds span{position:relative;left:auto;top:auto;align-self:flex-start;flex:none;width:calc(240 * var(--f))!important;max-width:none;margin-left:auto;padding-top:calc(3 * var(--f));
+  font-size:max(13.5px, calc(14 * var(--f)));line-height:1.43;color:rgba(7,7,7,.74)}
+.dk__creds svg{display:none}
+.dk__panel{position:relative;left:auto;top:auto;width:auto;height:auto;margin:calc(25 * var(--f)) var(--pad) 0;background:#fff;
+  border-radius:calc(16 * var(--f));clip-path:none;transition:none}
+.dk__frost{display:none}
+.dk__panel::after{box-shadow:inset 0 0 0 1px rgba(7,7,7,.03)}
+.dk__ph{height:calc(41 * var(--f));padding:0 calc(18 * var(--f));border-bottom:1px solid rgba(7,7,7,.03);font-size:max(10px, calc(10.5 * var(--f)))}
+.dk__ph>span:first-child{display:flex;align-items:center;gap:8px;color:#7A5F37}
+.dk__ph>span:last-child{color:rgba(7,7,7,.41)}
+.dk__ph i{width:4px;height:4px}
+.dk__comp li{height:auto;padding:calc(15 * var(--f)) calc(16 * var(--f)) calc(16 * var(--f)) calc(54 * var(--f));border-bottom:1px solid rgba(7,7,7,.03)}
+.dk__comp li:last-child{border-bottom:0}
+.dk__comp em{left:calc(18 * var(--f));top:calc(19 * var(--f));font-size:max(10px, calc(11 * var(--f)))}
+.dk__comp h3{position:relative;left:auto;top:auto;white-space:normal;font-size:calc(16.5 * var(--f));line-height:1.3}
+.dk__comp p{position:relative;left:auto;top:auto;width:auto;max-width:calc(280 * var(--f));margin-top:calc(3.5 * var(--f));font-size:max(13px, calc(13.5 * var(--f)));line-height:1.42;color:rgba(7,7,7,.46)}
+.dk__comp li:hover h3,.dk__comp li:hover p{transform:none}
+.dk__btn{position:relative;left:auto;right:auto;bottom:auto;display:block;height:calc(54 * var(--f));font-size:max(14px, calc(15.5 * var(--f)))}
+.dk__btn i{width:calc(54 * var(--f))}
+.dk__btn svg{width:17px;height:17px}
+.dk__comp li,.dk__ph,.dk__btn,.dk__panel.is-in .dk__ph,.dk__panel.is-in .dk__comp li,.dk__panel.is-in .dk__btn{opacity:1;transform:none;transition:background-color .4s ease}
+
+/* ═════════ 8. ОТЗЫВЫ ═════════  по макету (y 5168…6003): рейтинг плашкой во всю ширину, видео сеткой 2×2 (170×227) — тап открывает ролик */
+.rw{margin-top:calc(-1 * var(--sh));border-radius:var(--sh) var(--sh) 0 0}
+.rw .sx__in{padding:calc(46 * var(--f)) var(--pad) 0}
+.rw .sx__h{max-width:calc(300 * var(--f));font-size:calc(32 * var(--f));line-height:1.03;letter-spacing:-.011em}
+.rw__row{grid-template-columns:1fr 1fr;gap:calc(10 * var(--f));margin-top:calc(22 * var(--f))}
+.rw__rate{grid-column:1 / -1;min-height:calc(199 * var(--f));padding:calc(18 * var(--f)) calc(20 * var(--f));border-radius:calc(16 * var(--f))}
+.rw__go{right:calc(-120 * var(--f));top:calc(-50 * var(--f));width:calc(340 * var(--f))}
+.rw__top{font-size:max(10px, calc(10.5 * var(--f)))}
+.rw__top i{width:calc(36 * var(--f));height:calc(36 * var(--f));min-width:0;min-height:0;border-radius:7px}
+.rw__top svg{width:16px;height:16px;min-width:0;min-height:0}
+.rw__bot{display:grid;grid-template-columns:auto 1fr;column-gap:calc(18 * var(--f));align-items:end;margin-top:calc(16 * var(--f))}
+.rw__n{grid-row:1 / span 2;font-size:calc(84 * var(--f));line-height:.78;letter-spacing:-.03em}
+.rw__stars{margin-top:0;gap:3px}
+.rw__stars svg{width:calc(15 * var(--f));height:calc(15 * var(--f));min-width:0;min-height:0}
+.rw__sub{margin-top:calc(6 * var(--f));font-size:max(12.5px, calc(13 * var(--f)))}
+.rw__more{grid-column:1 / -1;margin-top:calc(16 * var(--f));padding-top:calc(14 * var(--f));font-size:max(14px, calc(14.5 * var(--f)))}
+.rvf{aspect-ratio:170/227;border-radius:calc(14 * var(--f))}
+.rvf__m img{object-position:50% 28%}
+.rvf__tag{left:calc(9 * var(--f));top:calc(9 * var(--f));padding:calc(6 * var(--f)) calc(8 * var(--f));border-radius:6px;font-size:max(8.5px, calc(9 * var(--f)))}
+.rvf__play{left:auto;top:calc(9 * var(--f));right:calc(9 * var(--f));translate:none;width:calc(38 * var(--f));height:calc(38 * var(--f));min-width:0;min-height:0}
+.rvf__cap{left:calc(12 * var(--f));right:calc(12 * var(--f));bottom:calc(11 * var(--f))}
+.rvf__cap b{font-size:max(13px, calc(14 * var(--f)))}
+.rvf__cap span{font-size:max(9.5px, calc(10.5 * var(--f)))}
+.rvf:hover .rvf__m img{scale:1}
+.rvf:hover .rvf__play{scale:1}
+
+/* ═════════ 10. ВОПРОСЫ ═════════  по макету (y 6199…7195): на той же бумаге, что отзывы, с воздухом сверху;
+   заголовок одной строкой, список белыми карточками, ниже — «не нашли ответ» и Telegram во всю ширину */
+.fq{margin-top:0;border-radius:0}
+.fq .sx__in,.rw + .fq .sx__in{padding:calc(72 * var(--f)) var(--pad) calc(75 * var(--f))}
+.fq__grid{display:flex;flex-direction:column;align-items:stretch}
+.fq__head{display:contents}
+.fq__head .sx__label{order:1}
+.fq__head .sx__h{order:2;font-size:calc(32 * var(--f));line-height:1.03;letter-spacing:-.011em;white-space:nowrap}
+.fq__head .sx__h .sx__line{display:inline-block}
+.fq__head .sx__h .sx__line:first-child{margin-right:.25em}
+.fq__list{order:3;gap:calc(8 * var(--f));margin-top:calc(26 * var(--f))}
+.fq .fq__lead{order:4;max-width:none;margin:calc(23 * var(--f)) 0 calc(10 * var(--f));font-size:max(15px, calc(16 * var(--f)));font-weight:500;line-height:1.63;color:rgba(7,7,7,.92)}
+.fq__head .kbtn{order:5;align-self:stretch;display:flex;height:calc(52 * var(--f));border-radius:5px;font-size:max(15px, calc(16 * var(--f)))}
+.fq__head .kbtn>span{flex:1;text-align:center;padding-left:calc(52 * var(--f))}
+.fq__head .kbtn>i{width:calc(52 * var(--f))}
+.fq__item{border-radius:calc(14 * var(--f))}
+.fq__item.is-open{box-shadow:0 calc(14 * var(--f)) calc(36 * var(--f)) rgba(7,7,7,.06)}
+.fq__q{grid-template-columns:calc(32 * var(--f)) 1fr calc(36 * var(--f));align-items:start;min-height:calc(64 * var(--f));
+  padding:calc(14 * var(--f)) calc(12 * var(--f)) calc(14 * var(--f)) calc(16 * var(--f))}
+.fq__n{padding-top:calc(10 * var(--f));font-size:max(10px, calc(11 * var(--f)))}
+.fq__t{align-self:center;padding-right:0;font-size:max(15px, calc(16 * var(--f)));line-height:1.3}
+.fq__pm{width:calc(36 * var(--f));height:calc(36 * var(--f));min-width:0;min-height:0;border-radius:8px;background:#F3EEE8}
+.fq__pm::before,.fq__pm::after{width:12px;min-width:0;height:2px}
+.fq__a p{max-width:none;padding:0 calc(18 * var(--f)) calc(18 * var(--f)) calc(48 * var(--f));font-size:max(14px, calc(14.5 * var(--f)));line-height:1.5;transform:translateY(-6px)}
+.fq__q:hover .fq__t{color:var(--ink)}
+
+/* ═════════ 7. СПЕЦИАЛИСТЫ И ЦЕНЫ ═════════  по макету (y 7246…9026)
+   Карточка 374 (шире колонки на 12 с каждой стороны), светло-голубая: фото 284 во всю ширину (тап — подробнее),
+   на фото должность стеклом; имя, услуга и цена; запись и «Подробнее» во всю ширину */
+.tm{margin-top:calc(-1 * var(--sh));border-radius:var(--sh) var(--sh) 0 0}
+.tm .sx__in{padding:calc(44 * var(--f)) var(--pad) calc(92 * var(--f))}
+.tm .sx__h{margin-top:calc(6 * var(--f));font-size:calc(32 * var(--f));line-height:1.1;letter-spacing:-.011em}
+.tm__grid{display:flex;flex-direction:column;gap:calc(21 * var(--f));margin:calc(22 * var(--f)) calc(-12 * var(--f)) 0}
+.tm__card{position:relative;display:block;padding:calc(4 * var(--f)) calc(4 * var(--f)) calc(13 * var(--f));border-radius:calc(11 * var(--f));background:#F6F8FC}
+.tm__m{height:calc(284 * var(--f));border-radius:calc(8 * var(--f));background:#F7F3EF}
+.tm__m img{object-position:50% 30%}
+.tm .tm__more{display:none}
+.tm__info{display:grid;grid-template-columns:1fr auto;grid-template-areas:"n n" "s p";align-items:end;column-gap:calc(12 * var(--f));margin:calc(21 * var(--f)) calc(8 * var(--f)) 0}
+/* должность — стеклом на фото, у левого нижнего угла (макет 93:541) */
+.tm__role{position:absolute;left:calc(12 * var(--f));top:calc(248 * var(--f));display:flex;align-items:center;height:calc(31 * var(--f));padding:0 calc(10 * var(--f));border-radius:5px;
+  background:rgba(255,255,255,.64);-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);font-size:max(10px, calc(11 * var(--f)));line-height:1;color:#070707;pointer-events:none}
+.tm__name{grid-area:n;font-size:calc(22 * var(--f));line-height:1.5}
+.tm__svc{grid-area:s;margin-top:calc(5 * var(--f));text-align:left;font:400 max(12.5px, calc(13 * var(--f)))/1.35 "Involve",sans-serif;text-transform:none;color:var(--ink60)}
+.tm__price{grid-area:p;justify-self:end;font-size:calc(22 * var(--f));font-weight:600;line-height:1.05;color:#5A88C5}
+.tm .kbtn{display:flex;width:auto;height:calc(52 * var(--f));margin:calc(29 * var(--f)) calc(8 * var(--f)) 0;border-radius:5px;font-size:max(15px, calc(16 * var(--f)))}
+.tm .kbtn>i{width:calc(52 * var(--f))}
+.tm .kbtn--wide>span{padding-left:calc(52 * var(--f))}
+.tm__det{display:block;width:calc(100% - 16 * var(--f));height:calc(52 * var(--f));margin:calc(4 * var(--f)) calc(8 * var(--f)) 0;border-radius:5px;background:#fff;
+  font:500 max(15px, calc(16 * var(--f)))/1 "Involve",sans-serif;color:#070707;cursor:pointer}
+
+/* ═════════ 9. ЖИЗНЬ ЦЕНТРА ═════════  по макету (y 9026…9915): молочный лист со скруглённым верхом поверх белых специалистов;
+   свежая публикация крупно, остальные — строками с квадратной миниатюрой */
+.lf{margin-top:calc(-1 * var(--sh));border-radius:var(--sh) var(--sh) 0 0}
+.lf .sx__in{padding:calc(64 * var(--f)) var(--pad) calc(94 * var(--f))}
+.lf .sx__h{font-size:calc(30 * var(--f));line-height:1.047;letter-spacing:-.01em;white-space:nowrap}
+.lf .sx__h .sx__line{clip-path:inset(-.12em -.6em -.24em -.06em)}
+.lf .sx__h .sx__line>span{text-wrap:nowrap}
+.lf__grid{display:flex;flex-direction:column;gap:0;margin-top:calc(26 * var(--f))}
+.lf__m{border-radius:calc(12 * var(--f))}
+.lf__meta{gap:8px;margin-top:calc(16 * var(--f));font-size:max(9.5px, calc(10.5 * var(--f)))}
+.lf__meta i{width:5px;height:5px;min-width:0;min-height:0}
+.lf__card h3{margin-top:calc(6 * var(--f));font-size:calc(21 * var(--f));line-height:1.2}
+.lf__txt{margin-top:calc(9 * var(--f));font-size:max(14px, calc(14.5 * var(--f)));line-height:1.45}
+.lf__a{gap:8px;margin-top:calc(14 * var(--f));font-size:max(14px, calc(14.5 * var(--f)))}
+.lf__a svg{width:12px;height:12px;min-width:0;min-height:0}
+.lf__m .tm__more{right:calc(10 * var(--f));bottom:calc(10 * var(--f));gap:calc(10 * var(--f));height:calc(36 * var(--f));min-height:0;padding:0 calc(4 * var(--f)) 0 calc(12 * var(--f));
+  border-radius:6px;font-size:max(13px, calc(13.5 * var(--f)))}
+.lf__m .tm__more i{width:calc(28 * var(--f));height:calc(28 * var(--f));min-width:0;min-height:0}
+/* остальные публикации — карточками-строками: белая плашка, миниатюра, рубрика и заголовок, справа квадрат со стрелкой —
+   видно, что строка открывается; нажимается вся карточка (растянутая кнопка заголовка) */
+.lf__card+.lf__card{position:relative;display:grid;grid-template-columns:calc(84 * var(--f)) 1fr calc(36 * var(--f));grid-template-rows:auto 1fr;column-gap:calc(14 * var(--f));align-items:start;
+  margin-top:calc(10 * var(--f));padding:calc(8 * var(--f)) calc(12 * var(--f)) calc(8 * var(--f)) calc(8 * var(--f));border-radius:calc(14 * var(--f));background:#fff}
+.lf__card+.lf__card:nth-child(2){margin-top:calc(28 * var(--f))}
+.lf__card+.lf__card .lf__m{grid-row:1 / span 2;width:calc(84 * var(--f));aspect-ratio:1;border-radius:calc(9 * var(--f))}
+.lf__card+.lf__card .tm__more,.lf__card+.lf__card .lf__txt,.lf__card+.lf__card .lf__a{display:none}
+.lf__card+.lf__card .lf__meta{grid-column:2;margin-top:calc(6 * var(--f))}
+.lf__card+.lf__card h3{grid-column:2;margin-top:calc(5 * var(--f));font-size:calc(16 * var(--f));line-height:1.25}
+.lf__card+.lf__card h3 button::before{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
+.lf__card+.lf__card::after{content:"";grid-column:3;grid-row:1 / span 2;align-self:center;width:calc(36 * var(--f));height:calc(36 * var(--f));border-radius:8px;
+  background:#F3EEE8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none' stroke='%23070707' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9h12M10.5 4.5 15 9l-4.5 4.5'/%3E%3C/svg%3E") center / 15px no-repeat}
+.lf__card+.lf__card:active{background:#F7F3EF}
+/* свежая публикация: «Читать» на кадре и ссылка под текстом — синей стрелкой, как кнопки сайта */
+.lf__card:first-child .lf__a{color:var(--acc-d);border-color:rgba(95,132,182,.4)}
+.lf__m:hover img{scale:1}
+
+/* ═════════ 11. ЗАПИСЬ И КОНТАКТЫ ═════════  по макету (y 9985…10890)
+   Карта — снимок (тайлы Яндекса 2x): тап открывает Яндекс Карты, ярлык метки — фото входа. Под картой, наезжая на неё,
+   белая карточка: открыто ли сейчас, адрес и метро, телефон и часы, запись и мессенджеры. Камень скруглён и снизу — наезжает на подвал. */
+.ct{z-index:10;margin-top:calc(-1 * var(--sh));border-radius:var(--sh)}
+.ct .sx__in{padding:calc(58 * var(--f)) var(--pad) calc(66 * var(--f))}
+.ct .sx__h{font-size:calc(30 * var(--f));line-height:1.18;letter-spacing:-.01em}
+.ct__stage{display:grid;grid-template-columns:minmax(0,1fr);height:auto;min-height:0;padding:0;margin-top:calc(38 * var(--f));overflow:visible;border-radius:0;background:none;isolation:auto}
+/* шторка сцены после показа не режет тень карточки (иначе за ней виден прямоугольник) */
+.ct__stage.rv-shot.is-in{clip-path:none}
+.ct__map{grid-area:1 / 1}
+.ct__card{grid-area:2 / 1}
+.ct__map{position:relative;inset:auto;height:calc(290 * var(--f));border-radius:calc(16 * var(--f));overflow:hidden;background:#EDEBE8}
+.ct__still{inset:auto;left:calc(27% - 250px);top:calc(52% - 220px);width:700px;height:400px;max-width:none;object-fit:fill}
+.ct__lf,.ct__zoom{display:none}
+.ct__open{position:absolute;inset:0;z-index:1}
+.ct__pinm{position:absolute;z-index:2;left:calc(27% - 10.5px);top:calc(52% - 40px);width:26px;height:40px}
+.ct__pinm .ct__tag{gap:9px;padding:5px 12px 5px 5px;border-radius:6px}
+.ct__pinm .ct__th{width:48px;height:36px;min-width:0;min-height:0;border-radius:3px}
+.ct__pinm .ct__th i{right:3px;bottom:3px;width:13px;height:13px;min-width:0;min-height:0}
+.ct__pinm .ct__tt{gap:4px}
+.ct__pinm .ct__tt b{font-size:8.5px}
+.ct__pinm .ct__tt em{font-size:11.5px}
+.ct__hint{left:calc(10 * var(--f));right:auto;top:calc(10 * var(--f));bottom:auto;z-index:3;gap:8px;padding:calc(10 * var(--f)) calc(13 * var(--f));border-radius:7px;
+  font-size:max(13px, calc(13.5 * var(--f)))}
+.ct__hint svg{width:12px;height:12px;min-width:0;min-height:0}
+.ct__osm{z-index:3;right:calc(10 * var(--f));top:calc(242 * var(--f));bottom:auto;font-size:8.5px}   /* над краем карточки, наезжающей на карту */
+.ct__card{position:relative;left:auto;top:auto;z-index:4;width:auto;transform:none;margin:calc(-30 * var(--f)) calc(8 * var(--f)) 0;
+  border-radius:calc(16 * var(--f));background:rgba(255,255,255,.96);-webkit-backdrop-filter:none;backdrop-filter:none;
+  box-shadow:0 calc(14 * var(--f)) calc(40 * var(--f)) rgba(7,7,7,.1),inset 0 0 0 1px #fff}
+.ct__ph{flex-wrap:wrap;row-gap:8px;height:auto;min-height:calc(48 * var(--f));padding:calc(14 * var(--f)) calc(18 * var(--f));border-bottom:1px solid rgba(7,7,7,.07);white-space:normal;font-size:max(9.5px, calc(10.5 * var(--f)))}
+.ct__ph>span:first-child i{width:4px;height:4px}
+.ct__now i{width:6px;height:6px;min-width:0;min-height:0}
+.ct__row{padding:calc(18 * var(--f));border-bottom:1px solid rgba(7,7,7,.07)}
+.ct__addr{font-size:calc(25 * var(--f))}
+.ct__metro{gap:calc(4 * var(--f)) calc(16 * var(--f));margin-top:calc(10 * var(--f));font-size:max(13px, calc(13.5 * var(--f)))}
+.ct__metro i{width:7px;height:7px;min-width:0;min-height:0;margin-right:7px}
+.ct__route{gap:8px;margin-top:calc(14 * var(--f));font-size:max(13.5px, calc(14 * var(--f)))}
+.ct__route svg{width:12px;height:12px;min-width:0;min-height:0}
+.ct__tel{font-size:calc(25 * var(--f))}
+.ct__hours{margin-top:calc(6 * var(--f));font-size:max(13px, calc(13.5 * var(--f)))}
+.ct__go{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(6 * var(--f));padding:calc(14 * var(--f))}
+.ct__go .kbtn{grid-column:1 / -1}
+.ct__ico{width:auto;height:calc(46 * var(--f));min-width:0;min-height:44px;border-radius:6px;background:#F3EFEA;box-shadow:none}
+.ct__ico svg{width:calc(20 * var(--f));height:calc(20 * var(--f));min-width:0;min-height:0}
+
+/* ═════════ подвал ═════════  по макету (группа 93:15): камень «Контактов» заходит на подвал на 95; бегущей строки на телефоне нет.
+   Часы, телефон и запись крупно, мессенджеры, соцсети, разделы в две колонки, как добраться */
+.fo{margin-top:calc(-95 * var(--f));padding-top:calc(95 * var(--f))}
+.fo__run{display:none}
+.fo__grid{grid-template-columns:1fr 1fr;grid-template-areas:"ct ct" "msg msg" "soc soc" "cases site" "way way";column-gap:calc(16 * var(--f));row-gap:calc(34 * var(--f));
+  padding:calc(59 * var(--f)) var(--pad) calc(40 * var(--f))}
+.fo__nav{margin-top:0;gap:calc(5 * var(--f))}
+.fo__k{margin-bottom:calc(14 * var(--f));font-size:max(9.5px, calc(10.5 * var(--f)))}
+.fo__big a{font-size:calc(30 * var(--f));line-height:1.35}
+.fo__mid{flex-direction:row;flex-wrap:wrap;gap:calc(8 * var(--f))}
+.fo__mid a{padding:calc(11 * var(--f)) calc(16 * var(--f));border-radius:999px;background:rgba(255,255,255,.1);font-size:max(14px, calc(15 * var(--f)));line-height:1}
+.fo__mid a::after{display:none}
+.fo__mid:has(a:hover) a:not(:hover),.fo__nav:has(a:hover) a:not(:hover){filter:none}
+.fo__icons{gap:calc(8 * var(--f))}
+.fo__icons a{width:calc(46 * var(--f));height:calc(46 * var(--f));min-width:0;min-height:0}
+.fo__icons svg{width:calc(20 * var(--f));height:calc(20 * var(--f));min-width:0;min-height:0}
+.fo__t{margin-bottom:calc(10 * var(--f));font-size:calc(17 * var(--f))}
+.fo__nav a,.fo__li{font-size:max(13.5px, calc(14 * var(--f)));line-height:1.5}
+.fo__up{top:auto;right:var(--pad);bottom:calc(34 * var(--f) + var(--sb));width:calc(48 * var(--f));height:calc(48 * var(--f));min-width:0;min-height:0}
+.fo__up svg{width:18px;height:18px;min-width:0;min-height:0}
+.fo__bot{grid-template-columns:1fr;gap:calc(18 * var(--f));margin-bottom:0;padding:calc(22 * var(--f)) calc(var(--pad) + 60 * var(--f)) calc(36 * var(--f) + var(--sb)) var(--pad)}
+.fo__b1,.fo__b2{gap:calc(8 * var(--f))}
+.fo__b2{max-width:none}
+.fo__sm,.fo__bot .fo__sm{font-size:max(12px, calc(12.5 * var(--f)));line-height:1.5}
+.fo__warn{max-width:none;margin-top:calc(10 * var(--f));font-size:max(9.5px, calc(10 * var(--f)))}
+.fo__copy{text-align:left;white-space:normal}
+.fo__copy br:first-child{display:none}
+
+/* ═════════ МЕНЮ ═════════ */
+/* стеклянный лист (2026-10-18): плавает над страницей с отступом, страница под ним размыта и чуть притушена;
+   без поддержки backdrop-filter — молочный непрозрачный, как раньше */
+.mm{position:fixed;inset:0;z-index:85;visibility:hidden;pointer-events:none;transition:visibility 0s linear .65s}
+.mm.is-open{visibility:visible;pointer-events:auto;transition:none}
+.mm::before{content:"";position:absolute;inset:0;background:rgba(22,16,12,.22);opacity:0;transition:opacity .5s ease}
+.mm.is-open::before{opacity:1}
+.mm__panel{--gr:calc(22 * var(--f));position:absolute;inset:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;
+  border-radius:var(--gr);background:#F9F5F2;color:#070707;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),inset 0 1px 0 rgba(255,255,255,.9),0 18px 50px rgba(30,20,12,.22);
+  padding:0 calc(var(--pad) - 8px) calc(14 * var(--f) + var(--sb));font-family:"Involve",sans-serif;
+  clip-path:inset(0 0 100% 0 round var(--gr));transition:clip-path .65s var(--ease)}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .mm__panel{background:linear-gradient(160deg,rgba(255,252,249,.72),rgba(246,240,234,.58));
+    -webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7)}
+}
+.mm.is-open .mm__panel{clip-path:inset(0 0 0 0 round var(--gr))}
+.mm__bar{flex:none;display:flex;justify-content:space-between;align-items:center;height:calc(72 * var(--f));margin-right:0}
+.mm__logo img{height:calc(40 * var(--f));width:auto}
+.mm__x{display:grid;place-items:center;padding:0;border:0;color:#070707;width:calc(48 * var(--f));height:calc(48 * var(--f));min-width:42px;min-height:42px;border-radius:50%;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 2px 10px rgba(30,20,12,.08)}
+.mm__x svg{width:15px;height:15px}
+.mm__nav{display:flex;flex-direction:column;margin-top:calc(14 * var(--f));border-top:1px solid rgba(7,7,7,.08)}
+.mm__nav a{display:flex;align-items:baseline;gap:calc(14 * var(--f));padding:calc(12 * var(--f)) 0;border-bottom:1px solid rgba(7,7,7,.08);
+  font:500 calc(25 * var(--f))/1.12 "Involve",sans-serif;letter-spacing:-.01em;opacity:0;transform:translateY(10px)}
+.mm__nav a[hidden]{display:none}
+.mm__nav i{flex:none;width:calc(22 * var(--f));font:500 max(10px, calc(11 * var(--f)))/1 "Manrope",sans-serif;font-feature-settings:"tnum";font-style:normal;color:#6E92C2}
+.mm.is-open .mm__nav a{opacity:1;transform:none;transition:opacity .5s ease,transform .7s cubic-bezier(.16,.84,.24,1)}
+.mm.is-open .mm__nav a:nth-child(1){transition-delay:.16s}
+.mm.is-open .mm__nav a:nth-child(2){transition-delay:.19s}
+.mm.is-open .mm__nav a:nth-child(3){transition-delay:.22s}
+.mm.is-open .mm__nav a:nth-child(4){transition-delay:.25s}
+.mm.is-open .mm__nav a:nth-child(5){transition-delay:.28s}
+.mm.is-open .mm__nav a:nth-child(6){transition-delay:.31s}
+.mm.is-open .mm__nav a:nth-child(7){transition-delay:.34s}
+.mm.is-open .mm__nav a:nth-child(8){transition-delay:.37s}
+.mm.is-open .mm__nav a:nth-child(9){transition-delay:.4s}
+.mm__foot{margin-top:auto;padding-top:calc(24 * var(--f));display:flex;flex-direction:column;gap:calc(10 * var(--f));opacity:0;transition:opacity .4s ease}
+.mm.is-open .mm__foot{opacity:1;transition:opacity .6s ease .42s}
+.mm__now{display:flex;align-items:center;gap:8px;margin:0;font:500 max(10px, calc(11 * var(--f)))/1.3 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:rgba(7,7,7,.46)}
+.mm__now i{position:relative;flex:none;width:6px;height:6px;border-radius:50%;background:rgba(7,7,7,.2)}
+.mm__now.is-open{color:#070707}
+.mm__now.is-open i{background:#4FA466}
+.mm__now.is-open i::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 1.5px #4FA466;animation:ctNow 2.4s cubic-bezier(.16,.84,.24,1) infinite}
+.mm__tel{font:500 calc(28 * var(--f))/1.15 "Involve",sans-serif;letter-spacing:-.01em}
+.mm__addr{margin:0;font:400 max(13px, calc(13.5 * var(--f)))/1.4 "Involve",sans-serif;color:rgba(7,7,7,.56)}
+.mm__msg{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(6 * var(--f));margin-top:calc(6 * var(--f))}
+.mm__msg a{display:flex;align-items:center;justify-content:center;gap:calc(7 * var(--f));height:calc(46 * var(--f));min-height:44px;border-radius:calc(10 * var(--f));background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.75);
+  font:500 max(12.5px, calc(13.5 * var(--f)))/1 "Involve",sans-serif}
+.mm__msg svg{width:calc(18 * var(--f));height:calc(18 * var(--f))}
+.mm .kbtn{height:calc(52 * var(--f))}
+
+/* ═════════ ПЛАШКА ЗАПИСИ снизу ═════════ синяя кнопка и звонок, плавают над страницей */
+.mbar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;gap:calc(8 * var(--f));padding:0 var(--pad) calc(10 * var(--f) + var(--sb));
+  transform:translateY(calc(100% + 20px));transition:transform .55s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.mbar.is-on{transform:none;pointer-events:auto}
+.mbar__book{flex:1;height:calc(52 * var(--f));box-shadow:0 calc(10 * var(--f)) calc(30 * var(--f)) rgba(40,60,90,.24)}
+.mbar__book>span{flex:1;text-align:center;padding-left:calc(50 * var(--f))}
+.mbar__call{display:grid;place-items:center;flex:none;width:calc(52 * var(--f));height:calc(52 * var(--f));min-width:44px;min-height:44px;border-radius:6px;background:#fff;color:#070707;
+  box-shadow:0 calc(10 * var(--f)) calc(30 * var(--f)) rgba(7,7,7,.16),inset 0 0 0 1px rgba(7,7,7,.06)}
+.mbar__call svg{width:calc(20 * var(--f));height:calc(20 * var(--f))}
+
+/* ═════════ ОКНА — листы снизу на весь экран ═════════ */
+.sheet__panel,.sheet__panel.bk,.sheet__panel.rwp__panel{left:0;right:0;top:calc(8px + var(--st));bottom:0;width:100%;min-width:0;max-width:none;
+  padding:0 var(--g) calc(18 * var(--f) + var(--sb));border-radius:calc(18 * var(--f)) calc(18 * var(--f)) 0 0;
+  transform:translateY(calc(100% + 20px));transition:transform .7s var(--ease)}
+.sheet.is-open .sheet__panel{transform:none}
+.sheet__x{right:calc(12 * var(--f));top:calc(12 * var(--f));width:calc(40 * var(--f));height:calc(40 * var(--f));min-width:40px;min-height:40px}
+.sheet__label{gap:8px;font-size:max(10px, calc(10.5 * var(--f)))}
+.sheet__label i{width:4px;height:4px;min-width:0;min-height:0}
+.sheet__h,.bk .sheet__h{margin:calc(14 * var(--f)) 0 calc(22 * var(--f));font-size:calc(30 * var(--f))}
+
+/* запись */
+.bk__bar{height:calc(60 * var(--f));min-height:0;margin:0 calc(-1 * var(--g)) calc(10 * var(--f));padding:0 calc(10 * var(--f));gap:calc(10 * var(--f))}
+.bk__back{width:calc(40 * var(--f));height:calc(40 * var(--f));min-width:40px;min-height:40px}
+.bk__steps{gap:calc(14 * var(--f));font-size:max(9.5px, calc(10 * var(--f)))}
+.bk__steps li{gap:6px}
+.bk__steps b{width:calc(22 * var(--f));height:calc(22 * var(--f));min-width:20px;min-height:20px}
+.who{gap:calc(14 * var(--f));padding:calc(14 * var(--f)) 0}
+.who img{width:calc(54 * var(--f));height:calc(54 * var(--f));min-width:0;min-height:0}
+.who span{gap:3px;font-size:max(12px, calc(12.5 * var(--f)))}
+.who b{font-size:calc(17 * var(--f))}
+.who em{font-size:max(14px, calc(15 * var(--f)))}
+.who:hover{padding-left:0}
+.who.is-pick{padding-left:calc(10 * var(--f))}
+.sheet__or{margin:calc(28 * var(--f)) 0 calc(12 * var(--f));font-size:max(9.5px, calc(10.5 * var(--f)))}
+.sheet__msg{gap:calc(8 * var(--f))}
+.sheet__msg a{height:calc(50 * var(--f));min-height:44px;gap:calc(10 * var(--f));padding:0 calc(14 * var(--f));border-radius:6px;font-size:max(14px, calc(14.5 * var(--f)))}
+.sheet__msg svg{width:20px;height:20px;min-width:0;min-height:0}
+.bk__row{gap:calc(12 * var(--f));padding:calc(12 * var(--f)) calc(14 * var(--f))}
+.bk__pick img,.bk__sum img,.bk__ticket img{width:calc(46 * var(--f));height:calc(46 * var(--f));min-width:0;min-height:0}
+.bk__who{gap:3px;font-size:max(12px, calc(12.5 * var(--f)))}
+.bk__who b{font-size:calc(16 * var(--f))}
+.bk__chg{font-size:max(9.5px, calc(10 * var(--f)))}
+.bk__cells>div{padding:calc(12 * var(--f)) calc(14 * var(--f))}
+.bk__cells small,.bk__addr small{margin-bottom:5px;font-size:max(9px, calc(9.5 * var(--f)))}
+.bk__cells b{font-size:calc(15.5 * var(--f))}
+.bk__addr{padding:calc(12 * var(--f)) calc(14 * var(--f));font-size:max(12.5px, calc(13 * var(--f)))}
+.bk__h{margin:calc(28 * var(--f)) 0 calc(16 * var(--f));font-size:calc(22 * var(--f))}
+.bk__form{gap:calc(12 * var(--f))}
+.bk__f{gap:7px}
+.bk__f>span{font-size:max(9.5px, calc(10.5 * var(--f)))}
+/* 16px — iOS не увеличивает страницу при фокусе в поле */
+.bk__f input,.bk__f textarea{height:50px;min-height:0;padding:0 14px;border-radius:6px;font-size:16px}
+.bk__f textarea{height:auto;padding:13px 14px}
+.bk__ok{gap:10px;font-size:max(12.5px, calc(13 * var(--f)))}
+.bk__ok i{width:20px;height:20px;min-width:0;min-height:0}
+.bk__go{bottom:calc(-18 * var(--f) - var(--sb));margin:calc(20 * var(--f)) calc(-1 * var(--g)) 0;padding:calc(14 * var(--f)) var(--g) calc(18 * var(--f) + var(--sb));
+  background:linear-gradient(rgba(249,245,242,0),#F9F5F2 calc(14 * var(--f)))}
+.bk__go .kbtn{height:calc(52 * var(--f))}
+.bk__go p{margin-top:calc(10 * var(--f));font-size:max(12px, calc(12.5 * var(--f)))}
+.bk__done{padding-top:calc(6 * var(--f))}
+.bk__check{width:calc(52 * var(--f));height:calc(52 * var(--f));min-width:0;min-height:0;margin-bottom:calc(20 * var(--f))}
+.bk__todo li{grid-template-columns:1fr;gap:3px;padding:calc(12 * var(--f)) 0;font-size:max(13px, calc(13.5 * var(--f)))}
+.bk__or{margin-top:calc(18 * var(--f));font-size:max(13px, calc(13.5 * var(--f)))}
+.bk__done-go{gap:calc(8 * var(--f));margin-top:calc(22 * var(--f))}
+.bk__done-go .kbtn{height:calc(50 * var(--f))}
+.bk__done-go .kbtn svg{width:16px;height:16px}
+
+/* специалист подробнее: лист снизу; листать — слева над фото, закрыть — справа */
+.dp__panel{left:0;right:0;top:calc(8px + var(--st));bottom:0;width:100%;min-width:0;border-radius:calc(18 * var(--f)) calc(18 * var(--f)) 0 0;
+  transform:translateY(calc(100% + 20px))}
+.dp.is-open .dp__panel{transform:none}
+.dp__nav{left:calc(18 * var(--f));right:calc(18 * var(--f));top:calc(18 * var(--f));z-index:5;flex-direction:row;gap:calc(6 * var(--f))}
+.dp__btn{width:calc(40 * var(--f));height:calc(40 * var(--f));min-width:40px;min-height:40px;border-radius:50%;background:rgba(249,245,242,.9);transform:none}
+.dp__btn:first-child{order:3;margin:0 0 0 auto}
+.dp__btn:hover{background:rgba(249,245,242,.9);color:var(--ink)}
+.dp__photo{height:auto;aspect-ratio:4/3;max-height:46vh;margin:calc(8 * var(--f)) calc(8 * var(--f)) 0;border-radius:calc(12 * var(--f))}
+.dp__n{left:auto;right:calc(12 * var(--f));top:auto;bottom:calc(12 * var(--f));padding:calc(6 * var(--f)) calc(9 * var(--f));border-radius:5px;font-size:max(9px, calc(10 * var(--f)))}
+.dp__body{padding:calc(22 * var(--f)) calc(20 * var(--f)) calc(26 * var(--f))}
+.dp__name{margin-top:calc(12 * var(--f));font-size:calc(32 * var(--f))}
+.dp__role{margin-top:calc(8 * var(--f));font-size:max(9.5px, calc(10.5 * var(--f)))}
+.dp__lead{margin-top:calc(14 * var(--f));max-width:none;font-size:max(14.5px, calc(15.5 * var(--f)))}
+.dp__facts{gap:calc(10 * var(--f));margin-top:calc(22 * var(--f))}
+.dp__facts li{padding-top:calc(10 * var(--f))}
+.dp__facts b{font-size:calc(28 * var(--f))}
+.dp__facts b small{margin-left:3px;font-size:max(8.5px, calc(9.5 * var(--f)))}
+.dp__facts span{margin-top:6px;font-size:max(11.5px, calc(12 * var(--f)))}
+.dp__sec{margin-top:calc(28 * var(--f))}
+.dp__k{gap:8px;margin-bottom:calc(10 * var(--f));font-size:max(9.5px, calc(10.5 * var(--f)))}
+.dp__k i{width:4px;height:4px;min-width:0;min-height:0}
+.dp__list li{grid-template-columns:calc(34 * var(--f)) 1fr;padding:calc(11 * var(--f)) 0;font-size:max(14px, calc(14.5 * var(--f)))}
+.dp__list em{font-size:max(9.5px, calc(10 * var(--f)))}
+.dp__cv li{grid-template-columns:calc(70 * var(--f)) 1fr}
+.dp__foot{padding:calc(12 * var(--f)) calc(20 * var(--f)) calc(14 * var(--f) + var(--sb))}
+.dp__price{margin-bottom:calc(10 * var(--f))}
+.dp__price span{font-size:max(12.5px, calc(13 * var(--f)))}
+.dp__price b{font-size:calc(22 * var(--f))}
+.dp__foot .kbtn{height:calc(52 * var(--f))}
+
+/* статья */
+.ar__sheet{left:0;right:0;top:calc(8px + var(--st));border-radius:calc(18 * var(--f)) calc(18 * var(--f)) 0 0}
+.ar__bar{height:calc(58 * var(--f));min-height:0;padding:0 calc(10 * var(--f)) 0 calc(20 * var(--f))}
+.ar__tools{gap:calc(8 * var(--f))}
+.ar__share{height:calc(40 * var(--f));min-height:40px;gap:7px;padding:0 calc(14 * var(--f));border-radius:20px;font-size:max(9.5px, calc(10 * var(--f)))}
+.ar__share svg{width:14px;height:14px;min-width:0;min-height:0}
+.ar__tools .sheet__x{width:calc(40 * var(--f));height:calc(40 * var(--f))}
+.ar__head{grid-template-columns:1fr;gap:calc(20 * var(--f));padding:calc(10 * var(--f)) calc(20 * var(--f)) 0}
+.ar__meta{gap:6px 14px;font-size:max(9.5px, calc(10.5 * var(--f)))}
+.ar__meta i{width:5px;height:5px;min-width:0;min-height:0;margin-right:7px}
+.ar__h{margin-top:calc(14 * var(--f));font-size:calc(30 * var(--f));line-height:1.05}
+.ar__lead{margin:calc(14 * var(--f)) 0 0;max-width:none;font-size:max(15px, calc(16 * var(--f)))}
+.ar__cover{height:auto;aspect-ratio:4/3;border-radius:calc(12 * var(--f))}
+.ar__grid{grid-template-columns:1fr;gap:calc(30 * var(--f));padding:calc(28 * var(--f)) calc(20 * var(--f)) calc(44 * var(--f))}
+.ar__aside{position:relative;top:auto;order:2}
+.ar__body p{margin-top:calc(16 * var(--f));font-size:max(15px, calc(16 * var(--f)));line-height:1.6}
+.ar__body h3{margin-top:calc(34 * var(--f));font-size:calc(22 * var(--f))}
+.ar__body ul{margin-top:calc(16 * var(--f))}
+.ar__body li{padding:calc(9 * var(--f)) 0 calc(9 * var(--f)) calc(22 * var(--f));font-size:max(14.5px, calc(15 * var(--f)))}
+.ar__body li::before{left:3px;top:calc(9 * var(--f) + .7em);width:4px;height:4px;min-width:0;min-height:0}
+.ar__pair{margin:calc(26 * var(--f)) 0 0;gap:calc(8 * var(--f))}
+.ar__pair figure{height:auto;aspect-ratio:3/4;border-radius:calc(10 * var(--f))}
+.ar__cap{margin-top:calc(10 * var(--f))!important;font-size:max(9.5px, calc(10.5 * var(--f)))!important}
+.ar__note{margin-top:calc(28 * var(--f));padding:calc(18 * var(--f)) calc(20 * var(--f)) calc(20 * var(--f));border-radius:calc(10 * var(--f))}
+.ar__note::before{top:calc(18 * var(--f));bottom:calc(20 * var(--f))}
+.ar__note p{font-size:max(15px, calc(16 * var(--f)))}
+.ar__card{padding:calc(20 * var(--f));border-radius:calc(14 * var(--f))}
+.ar__card .dp__k{margin-bottom:calc(14 * var(--f))}
+.ar__date{font-size:calc(30 * var(--f))}
+.ar__time{margin-top:6px;font-size:calc(17 * var(--f))}
+.ar__facts{margin-top:calc(16 * var(--f))}
+.ar__facts li{padding:calc(10 * var(--f)) 0;font-size:max(13px, calc(13.5 * var(--f)))}
+.ar__reg{gap:calc(10 * var(--f));margin-top:calc(16 * var(--f))}
+.ar__reg .kbtn{height:calc(50 * var(--f))}
+.ar__ok{gap:12px;margin-top:calc(16 * var(--f));padding:14px;font-size:max(13px, calc(13.5 * var(--f)))}
+.ar__ok .bk__check{width:30px;height:30px;min-width:0;min-height:0}
+.ar__ext{margin-top:calc(16 * var(--f))}
+.ar__more{padding:calc(34 * var(--f)) calc(20 * var(--f)) calc(48 * var(--f) + var(--sb))}
+.ar__more-h{font-size:calc(26 * var(--f))}
+.ar__more-g{grid-template-columns:1fr;gap:calc(10 * var(--f));margin-top:calc(20 * var(--f))}
+.ar__mc{grid-template-columns:calc(100 * var(--f)) 1fr;gap:calc(14 * var(--f));padding:calc(8 * var(--f));border-radius:calc(12 * var(--f))}
+.ar__mc>span:first-child{height:auto;aspect-ratio:1;border-radius:calc(8 * var(--f))}
+.ar__mc>span:last-child{padding:calc(4 * var(--f)) calc(4 * var(--f)) calc(4 * var(--f)) 0}
+.ar__mc b{margin-top:calc(8 * var(--f));font-size:calc(16 * var(--f))}
+.ar__mc em{gap:6px;padding-top:calc(10 * var(--f));font-size:max(13px, calc(13.5 * var(--f)))}
+.ar__mc em svg{width:12px;height:12px;min-width:0;min-height:0}
+
+/* отзывы с Яндекс Карт — лист снизу, список листается внутри */
+.sheet__panel.rwp__panel{padding-top:calc(22 * var(--f))}
+.rwp__panel .sheet__h{margin-bottom:calc(14 * var(--f))}
+.rwp__sum{gap:calc(10 * var(--f));margin-bottom:calc(16 * var(--f));font-size:max(12.5px, calc(13 * var(--f)))}
+.rwp__sum b{font-size:calc(32 * var(--f))}
+.rwp__stars svg{width:14px;height:14px;min-width:0;min-height:0}
+.rwp__list{min-height:0;margin:0 calc(-6 * var(--f)) calc(12 * var(--f));padding:0 calc(6 * var(--f));gap:calc(8 * var(--f))}
+.rwc{padding:calc(16 * var(--f)) calc(16 * var(--f)) calc(14 * var(--f));border-radius:calc(12 * var(--f))}
+.rwc__head{gap:calc(10 * var(--f));margin-bottom:calc(10 * var(--f))}
+.rwc__ava{width:calc(36 * var(--f));height:calc(36 * var(--f));min-width:0;min-height:0;font-size:calc(15 * var(--f))}
+.rwc__n{font-size:max(14px, calc(15 * var(--f)))}
+.rwc__d{margin-top:3px;font-size:max(9.5px, calc(10 * var(--f)))}
+.rwc__s svg{width:12px;height:12px;min-width:0;min-height:0}
+.rwc__t{font-size:max(14px, calc(14.5 * var(--f)))}
+.rwc__more{margin-top:calc(10 * var(--f));font-size:max(13px, calc(13.5 * var(--f)))}
+.rwp__end{font-size:max(9.5px, calc(10 * var(--f)))}
+.rwp__panel .kbtn{height:calc(50 * var(--f))}
+
+/* видео и фото входа */
+.player__x{right:12px;top:calc(12px + var(--st));width:44px;height:44px}
+.player__box{border-radius:10px}
+.ent__box{display:flex;flex-direction:column;gap:8px;max-height:calc(100svh - 110px);overflow-y:auto;overscroll-behavior:contain}
+.ent__box>img{flex:none;width:100%;height:auto;border-radius:10px;box-shadow:none}
+.ent__a{aspect-ratio:3/2}
+.ent__b{aspect-ratio:1/1}
+.ent__cap{flex-direction:column;gap:4px;margin:4px 0 0;font-size:13px}
+.ent__cap b{font-size:16px}
+
+/* ═════════ планшет вертикально: шире колонка, специалисты и видео — крупнее ═════════ */
+@media (min-width:600px){
+  /* сцена «О центре» во всю ширину: свой широкий ролик 1.6:1 (model-t.mp4), стекло — его размытая копия (frost-t: 800 × 888 ед.) */
+  .ab{--sch:calc(100vw / 1.6)}
+  .ab__glass{background:
+    linear-gradient(rgba(255,255,255,.46),rgba(255,255,255,.46)),
+    url(img/ab2/frost-t.webp) no-repeat calc(-1 * var(--cl)) calc(var(--lap) - var(--sch)) / 100vw calc(100vw * 888 / 800),
+    #F9F5F2}
+  /* врач — кадр во всю ширину листа (img/dk/photo-t.webp, 4:3 из ПК-фото), низ уходит в цвет листа */
+  .dk__scene{aspect-ratio:4/3;max-height:78svh}
+  .dk__img{object-position:50% 20%}
+  .dk__scene::after{display:block;content:"";position:absolute;inset:auto 0 0;height:34%;pointer-events:none;
+    background:linear-gradient(180deg,rgba(243,241,238,0) 0,rgba(243,241,238,.18) 25%,rgba(243,241,238,.48) 50%,rgba(243,241,238,.8) 75%,#F3F1EE 100%)}
+  .rw__row{grid-template-columns:repeat(4,1fr)}
+  .rvf{aspect-ratio:9/16}
+}
+
+/* ═════════ касание ═════════
+   на тач-экране наведение «залипает» после тапа (кнопка остаётся тёмной, плашка синей) — возвращаем спокойный вид;
+   вместо него — мгновенный отклик на само нажатие */
+@media (hover:none){
+  .kbtn:hover{background:#6E92C2}
+  .kbtn:hover>i{background:rgba(255,255,255,.26)}
+  .kbtn:hover svg,.lf__a:hover svg,.ct__route:hover svg,.ct__hint:hover svg{transform:none}
+  .tm__m:hover img,.lf__m:hover img,.rvf:hover .rvf__m img{scale:1}
+  .lf__m:hover .tm__more{background:rgba(255,255,255,.62);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}
+  .lf__m:hover .tm__more i,.tm__m:hover .tm__more i{background:#fff;rotate:0deg}
+  .lf__m:hover .tm__more i::before,.lf__m:hover .tm__more i::after,.tm__m:hover .tm__more i::before,.tm__m:hover .tm__more i::after{background:var(--ink)}
+  .rw__rate:hover .rw__go{transform:none}
+  .rw__rate:hover .rw__top i{background:rgba(255,255,255,.2);color:#fff}
+  .ct__ico:hover{background:#F3EFEA;color:var(--ink);box-shadow:none}
+  .ct__hint:hover{background:rgba(255,255,255,.72);color:var(--ink);box-shadow:inset 0 0 0 1px #fff}
+  .sheet__msg a:hover{background:#fff;color:inherit}
+  .fq__q:hover .fq__pm{background:#F3EEE8}
+  .fq__item.is-open .fq__q:hover .fq__pm{background:var(--acc)}
+  .tm__name:hover,.lf__card h3 button:hover{color:inherit}
+  .fo__icons a:hover,.fo__up:hover{background:var(--w16);color:#fff}
+  .hv__card:hover .hv__card-play{transform:none}
+  .ct__tag:hover{background:#070707}
+}
+.kbtn:active>span,.kbtn:active>i,.mbar__call:active svg,.hv__ico:active svg,.hd__ico:active svg,.mm__msg a:active,.sheet__msg a:active{opacity:.7}
+.cx.is-done .cx__row:active .cx__t,.fq__q:active .fq__t,.mm__nav a:active span,.who:active b,.fo__nav a:active,.lf__card h3 button:active{opacity:.55}
+.hv__card:active .hv__card-t,.hv__card:active .hv__card-m,.rw__rate:active .rw__n{opacity:.75}
+
+/* ═════════ телефон боком (низкое окно): без липких сцен — всё обычным потоком, первый экран компактнее ═════════ */
+@media (max-height:520px) and (orientation:landscape){
+  .hv{height:150vh}
+  .hv__kicker,.hv__lead,.hv__card{display:none}
+  .hv__h{font-size:calc(30 * var(--f))}
+  .hv__book{max-width:360px}
+  .hv__say{top:50%}
+  .hv__say-t{font-size:calc(19 * var(--f))}
+  /* «О центре» без закрепления: окно ниже сцены — карточки просто столбиком под ней (app.js видит, что .ab__pin не sticky) */
+  .ab{--sch:min(calc(100vw / 1.6), 80vh);--cw:min(calc(100vw - 2 * var(--pad)), 440px)}
+  .ab__run{height:auto}
+  .ab__pin{position:relative;top:auto;height:auto;overflow:visible}
+  .ab__cards{position:relative;inset:auto;display:flex;flex-direction:column;align-items:center;gap:calc(14 * var(--f));margin:calc(-1 * var(--lap)) 0 calc(34 * var(--f))}
+  .ab__card,.ab__card+.ab__card{position:relative;left:auto;top:auto;--ty:0px;opacity:1;transform:none}
+  .jr__step{--jw:min(calc(100vw - 2 * var(--pad) - 30 * var(--f)), 110vh);height:calc(var(--jw) * .72)}
+  .jr__track{--jw:min(calc(100vw - 2 * var(--pad) - 30 * var(--f)), 110vh)}
+  .dk__scene{width:min(calc(100% - 8 * var(--f)), 520px);margin-left:auto;margin-right:auto}
+  .mbar{display:none}
+}

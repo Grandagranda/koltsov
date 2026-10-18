@@ -1,0 +1,102 @@
+/* ==========================================================================
+   Подвал — по образцу millident.ru, в языке блоков из Figma:
+   Involve (строка, телефон, заголовки, ссылки) + Manrope (подписи капсом), --u = 1px кадра 1920,
+   поля 105u как у первых блоков. Размеры millident (кадр 1440) пересчитаны в кадр 1920 (× 4/3):
+   строка 132 → 176, телефон 48 → 64, заголовки 24 → 32, ссылки 16 → 18, кружки 48 → 64.
+
+   Фон — тёмно-коричневый #20150F (2026-10-17: чёрный был слишком холодным): пятна синего акцента, карамели и золота кружат по своим орбитам
+   с взаимно простыми периодами — цвет перетекает, без «маятника». Сверху — зерно против полос.
+   Блок «Контакты» лежит выше (z 10) и скруглённым низом наезжает на подвал (margin-top: −50, скругление 50 — sections.css).
+   ========================================================================== */
+.fo{
+  --u:calc(100vw / 1920);
+  --w64:rgba(255,255,255,.64); --w16:rgba(255,255,255,.16);
+  --out:cubic-bezier(.16,.84,.24,1);
+  position:relative;z-index:9;margin-top:calc(-50 * var(--u));padding-top:calc(62 * var(--u));overflow:hidden;
+  background:#20150F;color:#fff;font-family:"Involve","Geist",sans-serif;-webkit-font-smoothing:antialiased}
+
+/* ── фон: перетекающие пятна ── */
+.fo__bg{position:absolute;inset:0;pointer-events:none}
+.fo__s{position:absolute;left:50%;top:50%;border-radius:50%;will-change:transform}
+.fo__s--1{width:110vw;height:70vw;margin:-35vw 0 0 -55vw;background:radial-gradient(closest-side,rgba(110,146,194,.3),rgba(110,146,194,0));animation:foOrb1 37s linear infinite}
+.fo__s--2{width:90vw;height:65vw;margin:-32.5vw 0 0 -45vw;background:radial-gradient(closest-side,rgba(150,98,60,.42),rgba(150,98,60,0));animation:foOrb2 29s linear infinite}
+.fo__s--3{width:70vw;height:50vw;margin:-25vw 0 0 -35vw;background:radial-gradient(closest-side,rgba(77,114,160,.2),rgba(77,114,160,0));animation:foOrb3 43s linear infinite}
+.fo__s--4{width:70vw;height:50vw;margin:-25vw 0 0 -35vw;background:radial-gradient(closest-side,rgba(211,178,132,.3),rgba(211,178,132,0));animation:foOrb4 53s linear infinite}
+/* орбиты: поворот уносит пятно по кругу, растяжение меняет форму — цвет «течёт» */
+@keyframes foOrb1{from{transform:rotate(0) translateX(28vw) rotate(0) scale(1,1)}50%{transform:rotate(180deg) translateX(28vw) rotate(-150deg) scale(1.25,.85)}to{transform:rotate(360deg) translateX(28vw) rotate(-360deg) scale(1,1)}}
+@keyframes foOrb2{from{transform:rotate(140deg) translateX(32vw) rotate(-140deg) scale(1.1,.9)}50%{transform:rotate(-40deg) translateX(32vw) rotate(70deg) scale(.85,1.2)}to{transform:rotate(-220deg) translateX(32vw) rotate(220deg) scale(1.1,.9)}}
+@keyframes foOrb3{from{transform:rotate(250deg) translateX(22vw) rotate(-250deg) scale(1)}50%{transform:rotate(430deg) translateX(22vw) rotate(-400deg) scale(1.3,.8)}to{transform:rotate(610deg) translateX(22vw) rotate(-610deg) scale(1)}}
+@keyframes foOrb4{from{transform:rotate(60deg) translateX(30vw) rotate(-60deg)}to{transform:rotate(-300deg) translateX(30vw) rotate(300deg)}}
+.fo__grain{position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.fo__in{position:relative}
+
+/* ── бегущая строка: сразу под скруглённым краем «Контактов», как на millident ── */
+.fo__run{display:block;color:inherit;text-decoration:none;cursor:pointer;overflow:hidden;height:calc(171 * var(--u));box-sizing:border-box;padding-top:calc(20 * var(--u));margin-bottom:calc(86 * var(--u))}
+.fo__track{display:flex;width:max-content;animation:foRun 52s linear infinite}
+.fo__item{display:block;flex:none;padding-right:.28em;
+  font:500 calc(113 * var(--u))/1.246 "Involve",sans-serif;letter-spacing:-.035em;white-space:nowrap}
+@keyframes foRun{to{transform:translateX(-50%)}}
+/* строка ведёт на запись: при наведении замирает и теплеет */
+.fo__item{transition:color .5s ease}
+.fo__run:hover .fo__track{animation-play-state:paused}
+.fo__run:hover .fo__item{color:#E2C59B}
+
+/* ── сетка по Figma 60:1333: колонки с 105 / 580 / 1009, второй ряд на 317 ниже первого ── */
+.fo__grid{display:grid;padding:0 calc(105 * var(--u)) calc(178 * var(--u));
+  grid-template-columns:calc(475 * var(--u)) calc(429 * var(--u)) 1fr;
+  grid-template-areas:"soc msg ct" "cases site way"}
+.fo__soc{grid-area:soc}.fo__msg{grid-area:msg}.fo__ct{grid-area:ct}
+.fo__nav--cases{grid-area:cases}.fo__nav--site{grid-area:site}.fo__nav--way{grid-area:way}
+.fo__nav{margin-top:calc(121 * var(--u))}
+
+.fo__k{margin:0 0 calc(32 * var(--u));font:500 max(10px,calc(14 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";text-transform:uppercase;letter-spacing:.003em;color:var(--w64)}
+
+/* соцсети — кружки */
+.fo__icons{display:flex;gap:calc(11 * var(--u))}
+.fo__icons a,.fo__up{position:relative;display:grid;place-items:center;width:calc(64 * var(--u));height:calc(64 * var(--u));min-width:40px;min-height:40px;
+  border-radius:50%;background:var(--w16);color:#fff;transition:background-color .4s ease,color .4s ease}
+.fo__icons svg{width:calc(24 * var(--u));height:calc(24 * var(--u));min-width:16px;min-height:16px}
+.fo__icons a:hover,.fo__up:hover{background:#fff;color:#0D0907}
+
+/* наверх — справа на уровне кружков */
+.fo__up{position:absolute;right:calc(105 * var(--u));top:calc(261 * var(--u))}
+.fo__up svg{width:calc(20 * var(--u));height:calc(20 * var(--u));min-width:14px;min-height:14px;transition:transform .5s var(--out)}
+.fo__up:hover svg{transform:translateY(calc(-3 * var(--u)))}
+
+/* мессенджеры, телефон */
+.fo__mid{display:flex;flex-direction:column;align-items:flex-start;gap:calc(4 * var(--u))}
+.fo__mid a{font:500 max(18px,calc(32 * var(--u)))/1.32 "Involve",sans-serif;letter-spacing:-.01em}
+.fo__big{display:flex;flex-direction:column;align-items:flex-start}
+.fo__big a{font:500 max(26px,calc(52 * var(--u)))/1.4 "Involve",sans-serif;letter-spacing:-.013em;white-space:nowrap}
+/* ссылки крупного кегля: при наведении — линия проходит слева направо */
+.fo__mid a,.fo__big a{position:relative}
+.fo__mid a::after,.fo__big a::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:1px;background:currentColor;
+  transform:scaleX(0);transform-origin:right;transition:transform .6s cubic-bezier(.7,0,.2,1)}
+.fo__mid a:hover::after,.fo__big a:hover::after{transform:scaleX(1);transform-origin:left}
+
+/* колонки ссылок: заголовок 32, ссылки 21 с шагом ~41 (millident 24 / 16 / 31 в кадре 1440) */
+.fo__nav{display:flex;flex-direction:column;align-items:flex-start;gap:calc(8 * var(--u))}
+.fo__t{margin:0 0 calc(22 * var(--u));font:500 max(18px,calc(32 * var(--u)))/1.32 "Involve",sans-serif;letter-spacing:-.01em;color:#fff}
+.fo__nav a,.fo__li,.fo__sm{font:400 max(13px,calc(21 * var(--u)))/1.56 "Involve",sans-serif;color:var(--w64);transition:color .3s ease}
+.fo__nav a:hover,a.fo__sm:hover{color:#fff}
+
+/* низ — полоса во всю ширину с линией сверху (Figma 60:1382; нижняя линия прямоугольника в макете режет текст — не взята):
+   слева политика, лицензия и предупреждение (белый 64 % × 0,5), с 965 — согласие и Instagram, справа реквизиты (× 0,3) */
+.fo__bot{display:grid;grid-template-columns:calc(860 * var(--u)) 1fr auto;align-items:start;
+  margin-bottom:calc(132 * var(--u));padding:calc(28 * var(--u)) calc(105 * var(--u)) 0;border-top:1px solid var(--w16)}
+.fo__b1,.fo__b2{display:flex;flex-direction:column;align-items:flex-start}
+.fo__b1{gap:calc(7 * var(--u))}
+.fo__b2{gap:calc(11 * var(--u));max-width:calc(380 * var(--u));text-wrap:balance}
+.fo__bot .fo__sm{color:rgba(255,255,255,.19)}
+.fo__b1 .fo__sm{color:rgba(255,255,255,.32)}
+.fo__bot a.fo__sm:hover{color:#fff}
+.fo__warn{max-width:calc(432 * var(--u));margin:calc(27 * var(--u)) 0 0;font:500 max(10px,calc(14 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.32)}
+.fo__copy{text-align:right;white-space:nowrap}
+
+/* меню подвала — как меню шапки (lpas.com): наведённая ссылка резкая, соседние уходят в лёгкий расфокус */
+.fo__nav a,.fo__mid a{transition:color .3s ease,filter .3s ease}
+.fo__nav:has(a:hover) a:not(:hover),.fo__mid:has(a:hover) a:not(:hover){filter:blur(1.2px)}
+
+@media (prefers-reduced-motion:reduce){.fo__s,.fo__track{animation:none}}

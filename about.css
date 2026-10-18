@@ -1,0 +1,136 @@
+/* ==========================================================================
+   Блок 2 «О центре» — по Figma (s8aXHdn1…, кадр 25:483, y 898…1933).
+
+   Фон — полки в расфокусе и светлые растяжки (img/ab2/bg.webp), в центре —
+   видео с моделью (video/model.mp4, бесшовная петля: вперёд-назад с плавными
+   разворотами, _tools/model2-loop.cjs; прежний ролик — _versions/before-model2). Растушёвка видео в Figma — маска с блюром;
+   CSS-маски у пользователя не работают, поэтому она запечена в вуаль
+   img/ab2/veil.webp — тот же фон с альфой, лежит поверх видео (_tools/about2-img.cjs).
+
+   Слева заголовок и два абзаца, справа — стеклянные карточки 597×517 (Figma 27:740).
+   Сцена закреплена: блок встаёт на экран без карточек, дальше прокрутка по очереди
+   выносит их снизу на место (1:1 со скроллом); следующая наезжает на предыдущую,
+   и та, уже накрытая, плавно гаснет, чуть уменьшаясь и отходя вверх. app.js пишет
+   --ty (сдвиг), --s (масштаб), --o (прозрачность) и координаты копии фона для стекла.
+
+   Стекло без живого блюра: размытая копия всего блока (img/ab2/frost.webp) — фоном
+   внутри карточки, сдвинута и отмасштабирована навстречу её трансформации, так что
+   под карточкой видно ровно то, что за ней.
+
+   Слева внизу — белый кролик (символ #rabbit) и «Следуйте за белым кроликом», как в первой
+   версии первого экрана: раз в 3,2 с мягко подпрыгивает.
+
+   Резина: --u — 1px кадра 1920; кадр 1920×1035 вписан в окно (по ширине, а на низких
+   окнах — по высоте) и прижат к низу сцены; фон шире и выше кадра (bg.webp 2354×1185
+   от (0, −150)). У мелкого текста — пиксельные минимумы.
+   ========================================================================== */
+.ab{
+  --u:min(calc(100vw / 1920),calc(100svh / 1035));
+  /* окно выше кадра (16:10, 5:4, суженное окно): кадр с видео прижат к низу, а текст и карточки
+     поднимаем на половину лишней высоты — встают по центру окна, а не проваливаются вниз */
+  --lift:calc((100svh - 1035 * var(--u)) / 2);
+  --bg:#F9F5F2; --ink:#070707; --acc:#6E92C2; --gold:#73562C;
+  --out:cubic-bezier(.16,.84,.24,1);
+  position:relative;z-index:3;
+  /* экран + путь трёх карточек (по 735u + 40px, 1:1 со скроллом) + пауза в конце */
+  height:calc(130svh + 3 * (735 * var(--u) + var(--lift)) + 120px);background:var(--bg);color:var(--ink);
+  font-family:"Involve","Geist",sans-serif;-webkit-font-smoothing:antialiased}
+
+/* ── закреплённая сцена и кадр макета ── */
+.ab__stage{position:sticky;top:0;height:100svh;overflow:hidden;container-type:inline-size}
+/* сетка страницы: кадр вписан и в низком окне уже экрана — текст и карточки держим на полях 105 всего сайта,
+   а не кадра. --px — 1px кадра 1920 от ширины окна (как у остальных блоков), --off — левый край кадра на странице */
+.ab__frame{--px:calc(100vw / 1920);--off:calc(50cqw - 960 * var(--u))}
+.ab__frame{position:absolute;left:50%;bottom:0;width:calc(1920 * var(--u));height:calc(1035 * var(--u));margin-left:calc(-960 * var(--u))}
+
+/* ── фон, видео, вуаль ── */
+.ab__scene{position:absolute;inset:0;pointer-events:none}
+.ab__bg,.ab__video,.ab__veil{position:absolute;top:0;display:block;max-width:none}
+.ab__bg{left:0;top:calc(-150 * var(--u));width:calc(2354 * var(--u));height:calc(1185 * var(--u))}
+/* кадр ролика 1588×1278 = 1287 × 1035.8 в макете, от x = 369 */
+.ab__video{left:calc(369 * var(--u));width:calc(1287 * var(--u));height:calc(1287 * var(--u) * 1278 / 1588);object-fit:fill}
+/* вуаль шире видео на 4 с каждой стороны — закрывает сглаженный край ролика */
+.ab__veil{left:calc(365 * var(--u));width:calc(1295 * var(--u));height:calc(1035 * var(--u))}
+
+/* ── заголовок ── */
+.ab__label,.ab__h,.ab__lead{position:absolute;z-index:1;left:calc(105 * var(--px) - var(--off));margin:0}
+.ab__label{display:flex;align-items:center;gap:calc(10 * var(--u));margin:0;white-space:nowrap;
+  font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.ab__label{top:calc(212 * var(--u) - var(--lift))}
+.ab__label i{flex:none;width:calc(4 * var(--u));height:calc(4 * var(--u));min-width:3px;min-height:3px;background:#D3B284}
+.ab__h{top:calc(253 * var(--u) - var(--lift));white-space:nowrap;font:500 calc(70 * var(--u))/.9 "Involve",sans-serif}
+.ab__line{display:block;clip-path:inset(-.1em -.06em -.24em -.06em)}
+.ab__line>span{display:block;transform:translateY(112%);transition:transform 1.25s var(--out)}
+.ab__lead{top:calc(418 * var(--u) - var(--lift));width:max(calc(528 * var(--u)),360px)}
+.ab__lead p{margin:0;font:400 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.72)}
+.ab__lead p+p{margin-top:1.39em}
+
+/* ── слева внизу: белый кролик и «Следуйте за белым кроликом» — как в первой версии первого экрана
+      (v1: .hero__cue). Кролик сидит, раз в 3,2 с мягко подпрыгивает: вытянулся вверх — приземлился с приседом ── */
+.ab__follow{position:absolute;z-index:1;left:calc(105 * var(--px) - var(--off));bottom:calc(70 * var(--u));display:flex;align-items:flex-end;gap:calc(16 * var(--u));
+  font:500 max(11px,calc(12 * var(--u)))/1.35 "Inter Tight",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#3B2920;
+  opacity:0;transform:translateY(calc(12 * var(--u)));transition:opacity 1.2s ease .7s,transform 1.4s var(--out) .7s;pointer-events:none}
+.ab.is-in .ab__follow{opacity:1;transform:none}
+.ab__rb{flex:none;width:calc(46 * var(--u));height:calc(80 * var(--u));min-width:34px;min-height:60px;overflow:visible;transform-origin:50% 100%}
+.ab.is-in .ab__rb{animation:abCue 3.2s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes abCue{0%,62%,100%{transform:none}70%{transform:translateY(calc(-14 * var(--u))) scaleY(1.04)}78%{transform:translateY(calc(2 * var(--u))) scaleY(.96)}86%{transform:none}}
+
+/* обёртка карточек нужна телефону (лента со свайпом, mobile.css); на ПК она не рисуется — карточки стоят в кадре, как раньше */
+.ab__cards,.ab__run,.ab__pin{display:contents}
+/* ── карточки по Figma 27:740: 597×517 у x 1218, место 300; стекло — белый 40 % поверх
+      размытой копии (background blur 32.8 → 16px). --ty/--s/--o — выезд и уход (app.js) ── */
+.ab__card{position:absolute;z-index:2;left:min(calc(1815 * var(--px) - var(--off) - 597 * var(--u)),calc(1323 * var(--u)));top:calc(300 * var(--u) - var(--lift));
+  width:calc(597 * var(--u));height:calc(517 * var(--u));border-radius:calc(20 * var(--u));overflow:hidden;
+  opacity:var(--o,1);transform:translate3d(0,var(--ty,120vh),0) scale(var(--s,1));transform-origin:50% 0;will-change:transform,opacity}
+.ab__glass{position:absolute;inset:0;border-radius:inherit;
+  background:
+    linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,.4)),
+    url(img/ab2/frost.webp?v=3) no-repeat var(--bg);
+  background-size:auto,var(--fw,100%) var(--fh,100%);
+  background-position:0 0,var(--fx,0) var(--fy,0)}
+/* обводка — поверх картинки, как в макете (Rectangle 21) */
+.ab__card::after{content:"";position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px #fff}
+.ab__body{position:relative;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;
+  min-height:calc(216 * var(--u));padding:calc(34 * var(--u)) calc(20 * var(--u)) calc(20 * var(--u));text-align:center}
+.ab__n{display:flex;align-items:center;gap:calc(10 * var(--u));font:500 max(10px,calc(13 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.ab__n i{flex:none;width:calc(4 * var(--u));height:calc(4 * var(--u));min-width:3px;min-height:3px;background:#D3B284}
+.ab__t{margin:calc(17 * var(--u)) 0 0;white-space:nowrap;font:600 max(14px,calc(22 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.85)}
+.ab__p{width:calc(var(--w) * var(--u));max-width:100%;margin:calc(20.4 * var(--u)) 0 0;
+  font:400 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.67)}
+.ab__media{position:relative}
+/* рамка-«полка» под картинкой: верх и боковины 504×24, скругление 13 */
+.ab__rim{position:absolute;left:calc(50% - 252 * var(--u));top:0;width:calc(504 * var(--u));height:calc(24 * var(--u));box-sizing:border-box;
+  border:1px solid rgba(21,21,21,.09);border-bottom:0;border-radius:calc(13 * var(--u)) calc(13 * var(--u)) 0 0}
+.ab__img{position:absolute;display:block;max-width:none;left:calc(var(--ix) * var(--u));top:calc(var(--iy) * var(--u));
+  width:calc(var(--iw) * var(--u));height:calc(var(--ih) * var(--u));object-fit:cover}
+
+/* ── появление заголовка ── */
+.ab__label,.ab__lead{opacity:0;transform:translateY(calc(12 * var(--u)));transition:opacity 1.1s ease,transform 1.3s var(--out)}
+.ab.is-in .ab__label,.ab.is-in .ab__lead{opacity:1;transform:none}
+.ab.is-in .ab__line>span{transform:none;transition-delay:.15s}
+.ab.is-in .ab__line+.ab__line>span{transition-delay:.27s}
+.ab.is-in .ab__lead{transition-delay:.45s}
+
+@media (prefers-reduced-motion:reduce){
+  .ab__line>span,.ab__label,.ab__lead{transition:none!important;transform:none!important;opacity:1!important}
+  .ab__follow{transition:none!important;transform:none!important;opacity:1!important}
+  .ab__rb{animation:none!important}
+}
+
+/* «Следуйте за белым кроликом» — волна по буквам (как у кнопок, base.css) сама по себе:
+   раз в два прыжка кролика, сразу как он приземлился (86 % от 3,2 с = 2,75 с) */
+.ab.is-in .ab__follow .ch{animation:abWave 6.4s cubic-bezier(.37,0,.63,1) calc(2.75s + var(--ci) * 28ms) infinite}
+@keyframes abWave{0%,14%,100%{opacity:1;filter:blur(0);transform:none}3.5%,10.5%{opacity:.2;filter:blur(1.6px);transform:scale(.85)}}
+@media (prefers-reduced-motion:reduce){.ab.is-in .ab__follow .ch{animation:none}}
+
+/* справа от подписи — три тонких шеврона вниз (линия как у деталей кролика): кролик приземлился —
+   по ним сверху вниз пробегает волна, гаснет до следующего прыжка. Размер в em — от подписи */
+.ab__arr{flex:none;display:flex;flex-direction:column;gap:.22em;margin:0 0 .38em}
+.ab__arr svg{display:block;width:.95em;height:.55em;overflow:visible;fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;opacity:.22}
+.ab__arr path{vector-effect:non-scaling-stroke}
+.ab.is-in .ab__arr svg{animation:abArr 3.2s cubic-bezier(.4,0,.2,1) infinite}
+.ab.is-in .ab__arr svg:nth-child(1){animation-delay:2.8s}
+.ab.is-in .ab__arr svg:nth-child(2){animation-delay:2.96s}
+.ab.is-in .ab__arr svg:nth-child(3){animation-delay:3.12s}
+@keyframes abArr{0%,40%,100%{opacity:.22;transform:none}13%{opacity:1;transform:translateY(.16em)}}
+@media (prefers-reduced-motion:reduce){.ab.is-in .ab__arr svg{animation:none;opacity:.6}}
