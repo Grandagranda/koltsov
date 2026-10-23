@@ -94,6 +94,9 @@
 .fo__bot a.fo__sm:hover{color:#fff}
 .fo__warn{max-width:calc(432 * var(--u));margin:calc(27 * var(--u)) 0 0;font:500 max(10px,calc(14 * var(--u)))/1.35 "Manrope",sans-serif;font-feature-settings:"tnum";letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.32)}
 .fo__copy{text-align:right;white-space:nowrap}
+.fo__req{grid-column:1/-1;display:grid;grid-template-columns:calc(860 * var(--u)) 1fr auto;margin-top:calc(44 * var(--u))}
+.fo__req p{margin:0;font:400 max(12px,calc(15 * var(--u)))/1.55 "Involve",sans-serif;color:rgba(255,255,255,.26)}
+.fo__req p:last-child{text-align:right}
 
 /* меню подвала — как меню шапки (lpas.com): наведённая ссылка резкая, соседние уходят в лёгкий расфокус */
 .fo__nav a,.fo__mid a{transition:color .3s ease,filter .3s ease}

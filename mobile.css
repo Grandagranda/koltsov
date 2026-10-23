@@ -305,6 +305,12 @@ a,button,[tabindex]{-webkit-tap-highlight-color:transparent}
 .dk__creds span{position:relative;left:auto;top:auto;align-self:flex-start;flex:none;width:calc(240 * var(--f))!important;max-width:none;margin-left:auto;padding-top:calc(3 * var(--f));
   font-size:max(13.5px, calc(14 * var(--f)));line-height:1.43;color:rgba(7,7,7,.74)}
 .dk__creds svg{display:none}
+/* ссылка на КМК: на телефоне наведения нет — заметная плашка «Сайт школы КМК ↗» под текстом (2026-10-22) */
+.dk__creds a{flex-wrap:wrap}
+.dk__go{display:block;width:calc(240 * var(--f));margin:calc(10 * var(--f)) 0 0 auto;font-style:normal}
+.dk__go i{display:inline-flex;align-items:center;gap:calc(8 * var(--f));padding:calc(8 * var(--f)) calc(12 * var(--f)) calc(8 * var(--f)) calc(14 * var(--f));border-radius:calc(8 * var(--f));background:rgba(110,146,194,.12);font:500 max(13px, calc(14 * var(--f)))/1.2 "Involve",sans-serif;font-style:normal;color:var(--acc)}
+.dk__go svg{display:block!important;width:14px;height:14px;margin:0}
+.dk__creds a:active .dk__go i{background:rgba(110,146,194,.22)}
 .dk__panel{position:relative;left:auto;top:auto;width:auto;height:auto;margin:calc(25 * var(--f)) var(--pad) 0;background:#fff;
   border-radius:calc(16 * var(--f));clip-path:none;transition:none}
 .dk__frost{display:none}
@@ -362,6 +368,9 @@ a,button,[tabindex]{-webkit-tap-highlight-color:transparent}
 .fq__head .sx__h .sx__line:first-child{margin-right:.25em}
 .fq__list{order:3;gap:calc(8 * var(--f));margin-top:calc(26 * var(--f))}
 .fq .fq__lead{order:4;max-width:none;margin:calc(23 * var(--f)) 0 calc(10 * var(--f));font-size:max(15px, calc(16 * var(--f)));font-weight:500;line-height:1.63;color:rgba(7,7,7,.92)}
+.fq__acts{order:5;flex-direction:column;gap:calc(8 * var(--f))}
+.fq__tel{order:6;margin-top:calc(16 * var(--f));font-size:max(14px, calc(15 * var(--f)))}
+.fq__tel a{font-size:max(17px, calc(19 * var(--f)))}
 .fq__head .kbtn{order:5;align-self:stretch;display:flex;height:calc(52 * var(--f));border-radius:5px;font-size:max(15px, calc(16 * var(--f)))}
 .fq__head .kbtn>span{flex:1;text-align:center;padding-left:calc(52 * var(--f))}
 .fq__head .kbtn>i{width:calc(52 * var(--f))}
@@ -370,7 +379,7 @@ a,button,[tabindex]{-webkit-tap-highlight-color:transparent}
 .fq__q{grid-template-columns:calc(32 * var(--f)) 1fr calc(36 * var(--f));align-items:start;min-height:calc(64 * var(--f));
   padding:calc(14 * var(--f)) calc(12 * var(--f)) calc(14 * var(--f)) calc(16 * var(--f))}
 .fq__n{padding-top:calc(10 * var(--f));font-size:max(10px, calc(11 * var(--f)))}
-.fq__t{align-self:center;padding-right:0;font-size:max(15px, calc(16 * var(--f)));line-height:1.3}
+.fq__t{align-self:center;min-width:0;padding-right:calc(10 * var(--f));font-size:max(15px, calc(16 * var(--f)));line-height:1.3}
 .fq__pm{width:calc(36 * var(--f));height:calc(36 * var(--f));min-width:0;min-height:0;border-radius:8px;background:#F3EEE8}
 .fq__pm::before,.fq__pm::after{width:12px;min-width:0;height:2px}
 .fq__a p{max-width:none;padding:0 calc(18 * var(--f)) calc(18 * var(--f)) calc(48 * var(--f));font-size:max(14px, calc(14.5 * var(--f)));line-height:1.5;transform:translateY(-6px)}
@@ -506,6 +515,9 @@ a,button,[tabindex]{-webkit-tap-highlight-color:transparent}
 .fo__sm,.fo__bot .fo__sm{font-size:max(12px, calc(12.5 * var(--f)));line-height:1.5}
 .fo__warn{max-width:none;margin-top:calc(10 * var(--f));font-size:max(9.5px, calc(10 * var(--f)))}
 .fo__copy{text-align:left;white-space:normal}
+.fo__req{grid-template-columns:1fr;gap:calc(14 * var(--f));margin-top:calc(6 * var(--f))}
+.fo__req p{font-size:max(11.5px, calc(12 * var(--f)))}
+.fo__req p:last-child{text-align:left}
 .fo__copy br:first-child{display:none}
 
 /* ═════════ МЕНЮ ═════════ */

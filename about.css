@@ -61,9 +61,13 @@
 .ab__h{top:calc(253 * var(--u) - var(--lift));white-space:nowrap;font:500 calc(70 * var(--u))/.9 "Involve",sans-serif}
 .ab__line{display:block;clip-path:inset(-.1em -.06em -.24em -.06em)}
 .ab__line>span{display:block;transform:translateY(112%);transition:transform 1.25s var(--out)}
-.ab__lead{top:calc(418 * var(--u) - var(--lift));width:max(calc(528 * var(--u)),360px)}
-.ab__lead p{margin:0;font:400 max(12px,calc(15 * var(--u)))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.72)}
-.ab__lead p+p{margin-top:1.39em}
+/* текст длинный (2026-10-22): --abk — кегль, подогнанный app.js abFit под высоту до «Следуйте за белым кроликом» */
+.ab__lead{top:calc(418 * var(--u) - var(--lift));width:max(calc(560 * var(--u)),360px)}
+.ab__lead p{margin:0;font:400 calc(var(--abk,1) * max(12px,calc(15 * var(--u))))/1.39 "Involve",sans-serif;color:rgba(7,7,7,.72)}
+.ab__lead p+p{margin-top:.9em}
+.ab__li{position:relative;display:block;margin-top:.45em;padding-left:1.15em}
+.ab__li::before{content:"";position:absolute;left:.1em;top:.6em;width:max(3px,calc(4 * var(--u)));height:max(3px,calc(4 * var(--u)));background:#D3B284}
+.ab__li b{font-weight:500;color:var(--ink)}
 
 /* ── слева внизу: белый кролик и «Следуйте за белым кроликом» — как в первой версии первого экрана
       (v1: .hero__cue). Кролик сидит, раз в 3,2 с мягко подпрыгивает: вытянулся вверх — приземлился с приседом ── */

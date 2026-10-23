@@ -558,7 +558,22 @@
   var abKey = '';
   var AB_DAMP = 5, abS = -1, abGoal = 0, abLast = 0, abRaf = 0;
   var smooth01 = function (a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
-  function abClip() { abKey = ''; }
+  function abClip() { abKey = ''; abFit(); }
+  // ПК: длинный текст «О центре» не должен заходить на «Следуйте за белым кроликом» — в низком окне кегль ужимается (--abk, не мельче 10.5px)
+  function abFit() {
+    var lead = ab && $('.ab__lead', ab), fol = ab && $('.ab__follow', ab);
+    if (!lead || !fol) return;
+    lead.style.removeProperty('--abk');
+    if (MOB) return;
+    var u = Math.min(innerWidth / 1920, innerHeight / 1035), k = 1;
+    var fs0 = parseFloat(getComputedStyle($('p', lead)).fontSize) || 15;
+    for (var n = 0; n < 5; n++) {
+      var avail = fol.getBoundingClientRect().top - lead.getBoundingClientRect().top - 40 * u, h = lead.offsetHeight;
+      if (h <= avail || fs0 * k <= 10.5) break;
+      k = Math.max(10.5 / fs0, k * Math.min(.98, avail / h));
+      lead.style.setProperty('--abk', k.toFixed(3));
+    }
+  }
   /* телефон и планшет (макет 93:14): сцена с карточкой 01 закреплена низом у низа экрана (.ab__pin sticky в .ab__run),
      прокрутка 1:1 выносит снизу 02, затем 03 — каждая наезжает на предыдущую; накрытая чуть уменьшается и отходит вверх
      (не гаснет — 2026-10-18, лаги на телефоне). Стекло стоит вместе с карточкой. В низком окне (телефон боком) .ab__pin не липнет — карточки столбиком. */
@@ -649,6 +664,8 @@
     });
   }).observe(ab);
   abGeoM();
+  abFit();
+  if (document.fonts) document.fonts.ready.then(abFit);
   abDraw();
 
   /* ═════════ 9. ЖИЗНЬ ЦЕНТРА ═════════
